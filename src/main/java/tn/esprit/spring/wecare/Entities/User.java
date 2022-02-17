@@ -4,6 +4,12 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+
+import tn.esprit.spring.wecare.Entities.Forum.Comment;
+import tn.esprit.spring.wecare.Entities.Forum.Likes;
+import tn.esprit.spring.wecare.Entities.Forum.Notification;
+import tn.esprit.spring.wecare.Entities.Forum.Post;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -46,6 +52,20 @@ public class User {
 				joinColumns = @JoinColumn(name = "user_id"), 
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
+	
+	//A user can post 0 or many posts
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
+	private Set<Post> posts= new HashSet<>();
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Comment> comments;
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Notification> notifications;
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Likes> likes;
 	
 	public User() {
 	}
