@@ -5,6 +5,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
+import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
@@ -67,6 +69,14 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Likes> likes;
 	
+	//relation with collaborator 
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
+	private Set<Collaborator> collaborators= new HashSet<>();
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Rating> ratings;
 	public User() {
 	}
 
