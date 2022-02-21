@@ -5,6 +5,8 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import lombok.Getter;
+import lombok.Setter;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
@@ -21,6 +23,8 @@ import java.util.Set;
 			@UniqueConstraint(columnNames = "username"),
 			@UniqueConstraint(columnNames = "email") 
 		})
+@Getter
+@Setter
 public class User {
 	
 	@Id
