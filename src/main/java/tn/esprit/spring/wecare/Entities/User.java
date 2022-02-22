@@ -70,8 +70,8 @@ public class User {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Notification> notifications;
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<Likes> likes;
+	@OneToOne
+	private Likes likes;
 	
 	//relation with collaborator 
 	

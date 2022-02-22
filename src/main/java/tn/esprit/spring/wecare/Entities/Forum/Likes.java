@@ -1,6 +1,7 @@
 package tn.esprit.spring.wecare.Entities.Forum;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -33,18 +34,18 @@ public class Likes  implements Serializable{
 	private Long idLikes;
 	
 	
-	private Date timestamp;
+	private LocalDateTime timestamp;
 	
 	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_user_id")
+	@OneToOne
     private User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "the_post_id")
     private Post post;
 	
-	@OneToOne
+	 @OneToOne(fetch = FetchType.LAZY)
+		@JoinColumn(name = "notifId")
 	private Notification notification;
 	
 	

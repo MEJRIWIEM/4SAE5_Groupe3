@@ -1,6 +1,7 @@
 package tn.esprit.spring.wecare.Entities.Forum;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public class Post implements Serializable{
 	private String title;
 	@NonNull
 	private String text;
-	private Date timestamp;
+	private LocalDateTime timestamp;
 	private String picture;
 	// 0 or many posts can belong to a user
 	@ManyToOne

@@ -1,6 +1,8 @@
 package tn.esprit.spring.wecare.Entities.Forum;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -35,7 +37,7 @@ public class Comment  implements Serializable{
 	
 	@NonNull
 	private String text;
-	private Date timestamp;
+	private LocalDateTime timestamp;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "the_user_id")
@@ -45,7 +47,8 @@ public class Comment  implements Serializable{
     @JoinColumn(name = "the_post_id")
     private Post post;
 	
-	@OneToOne
+	 @OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "notifId")
 	private Notification notification;
 
 

@@ -1,5 +1,6 @@
 package tn.esprit.spring.wecare.Services.Forum;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -21,6 +22,7 @@ public class PostServiceImp implements PostService{
 	@Override
 	public ResponseEntity addPost(Post post, User user) {
 		post.setUser(user);
+		post.setTimestamp(LocalDateTime.now());
 		postRepository.save(post);
 		return new ResponseEntity("Post created successfully!",HttpStatus.CREATED);
 	}
@@ -73,7 +75,7 @@ public class PostServiceImp implements PostService{
 			 if(p.getUser().equals(user)&& p.getIdPost().equals(id))
 			 {
 				p.setText(post.getText());
-				p.setTimestamp(post.getTimestamp());
+				p.setTimestamp(LocalDateTime.now());
 				p.setPicture(post.getPicture());
 				p.setTitle(post.getTitle());
 				postRepository.save(p);
