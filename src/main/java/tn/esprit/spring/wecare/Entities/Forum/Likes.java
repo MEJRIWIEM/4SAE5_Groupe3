@@ -38,7 +38,7 @@ public class Likes implements Serializable {
 	private Long idLikes;
 
 	private LocalDateTime timestamp;
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne
 	@JoinColumn(name = "id_us_liked", referencedColumnName = "id")
 	private User user;
 
