@@ -17,10 +17,9 @@ import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.LikesRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.NotificationRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
+
 @Service
-public class LikeServiceImp implements LikesService{
-
-
+public class LikeServiceImp implements LikesService {
 
 	@Autowired
 	PostRepository postRepository;
@@ -30,33 +29,43 @@ public class LikeServiceImp implements LikesService{
 	NotificationRepository notificationRepository;
 	@Autowired
 	LikesRepository likesRepository;
+
 	@Override
 	public ResponseEntity LikePost(User user, Long id) {
 		Notification notification = new Notification();
 		Likes like = new Likes();
+		notification.setLike(like);
 		List<Post> posts = postRepository.findAll();
+		List<Likes> likes = likesRepository.findAll();
+		Post post = postRepository.getById(id);
 
-		 for(Post p: posts){
-			 if(p.getIdPost().equals(id))
-			 {
-				 like.setPost(p);
-				 like.setPost(p);
-				 like.setUser(user);
-				 like.setTimestamp(LocalDateTime.now());
-				// like.setNotification(notification);
-			
-			likesRepository.save(like);
-			/*
-			 notification.setLike(like);
-			 notification.setUser(p.getUser());
-			 notificationRepository.save(notification);*/
-			 
-			 user.setLikes(like);
-			 userRepository.save(user);
-			 return new ResponseEntity<String>("Post was liked successfully!",HttpStatus.OK);
-			 }}
-		 
-		 return new ResponseEntity<String>("Post was not liked!",HttpStatus.BAD_REQUEST);
+		for (Post p : posts) {
+			for (Likes l : likes) {
+				if ((l.getPost().equals(post))) {
+					if (l.getUser().equals(user))
+
+						return new ResponseEntity<String>("User already liked this post!", HttpStatus.OK);
+				}
+			}
+			if (p.getIdPost().equals(id)) {
+				like.setPost(p);
+				like.setPost(p);
+				like.setTimestamp(LocalDateTime.now());
+				like.setNotif(notification);
+				like.setUser(user);
+
+				likesRepository.save(like);
+
+				notification.setUser(p.getUser());
+				notificationRepository.save(notification);
+
+				userRepository.save(user);
+				return new ResponseEntity<String>("Post was liked successfully!", HttpStatus.OK);
+			}
+
+		}
+
+		return new ResponseEntity<String>("Post was not liked!", HttpStatus.BAD_REQUEST);
 	}
 
 	@Override

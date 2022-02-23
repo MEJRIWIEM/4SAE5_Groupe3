@@ -26,7 +26,7 @@ import tn.esprit.spring.wecare.Entities.User;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment  implements Serializable{
+public class Comment implements Serializable {
 	/**
 	 * 
 	 */
@@ -34,22 +34,21 @@ public class Comment  implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idComment;
-	
+
 	@NonNull
 	private String text;
 	private LocalDateTime timestamp;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_user_id")
-    private User user;
-	
+	@JoinColumn(name = "the_user_id")
+	private User user;
+
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_post_id")
-    private Post post;
-	
-	 @OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "the_post_id")
+	private Post post;
+
+	@OneToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "notifId")
 	private Notification notification;
-
 
 }
