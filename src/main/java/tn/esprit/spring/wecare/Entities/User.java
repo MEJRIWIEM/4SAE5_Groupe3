@@ -11,6 +11,8 @@ import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
+import tn.esprit.spring.wecare.Entities.Rewards.Badge;
+import tn.esprit.spring.wecare.Entities.Rewards.Evaluation;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -74,11 +76,20 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Collaborator> collaborators= new HashSet<>();
 	
+	//relation with badge
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
+	private Set<Badge> badges= new HashSet<>();
+	
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;
 	public User() {
 	}
+	
+	//A user can have  0 or many evaluations
+	@ManyToMany
+	private Set<Evaluation> evaluations;
 
 	public User(String username, String email, String password,String firstname) {
 		this.username = username;
