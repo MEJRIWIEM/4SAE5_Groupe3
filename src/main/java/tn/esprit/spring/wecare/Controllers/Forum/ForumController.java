@@ -50,8 +50,9 @@ public class ForumController {
 
 	}
 	  @PostMapping("/addPostupload")
-	  public ResponseEntity<Object> uploadFile(@RequestPart("file") MultipartFile file,
+	  public ResponseEntity<Object> uploadFile(@RequestPart(value="file",required=false) MultipartFile file,
 			  @RequestPart("post") Post post) throws IOException {
+		  
 		  String username;
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (principal instanceof UserDetails) {

@@ -96,10 +96,13 @@ public class PostServiceImp implements PostService{
 
 	@Override
 	public ResponseEntity addPost(MultipartFile file, Post post, User user) throws IOException {
-		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-	    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
-        fileDBRepository.save(FileDB);
-        post.setFileDB(FileDB);
+		if(file!=null){
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+	        fileDBRepository.save(FileDB);
+	        post.setFileDB(FileDB);
+		}
+		
 		post.setUser(user);
 		post.setTimestamp(LocalDateTime.now());
 		postRepository.save(post);
