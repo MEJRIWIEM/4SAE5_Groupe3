@@ -1,15 +1,18 @@
 package tn.esprit.spring.wecare.Services.Forum;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 
 public interface PostService {
 	public ResponseEntity addPost(Post post, User user);
+	public ResponseEntity addPost(MultipartFile file,Post post, User user) throws IOException;
 	//see the list of posts
 	public List<Post> RetrievePosts();
 	//see the list of user's posts
