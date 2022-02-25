@@ -1,5 +1,6 @@
 package tn.esprit.spring.wecare.Services.Forum;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
 
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
@@ -18,6 +23,8 @@ import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
 public class PostServiceImp implements PostService{
 	@Autowired
 	PostRepository postRepository;
+	@Autowired
+	FileDBRepository fileDBRepository;
 
 	@Override
 	public ResponseEntity addPost(Post post, User user) {
@@ -85,6 +92,21 @@ public class PostServiceImp implements PostService{
 		 return new ResponseEntity("Post was not edited!",HttpStatus.CONFLICT);
 
 		
+	}
+
+	@Override
+	public ResponseEntity addPost(MultipartFile file, Post post, User user) throws IOException {
+		if(file!=null){
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+	        fileDBRepository.save(FileDB);
+	        post.setFileDB(FileDB);
+		}
+		
+		post.setUser(user);
+		post.setTimestamp(LocalDateTime.now());
+		postRepository.save(post);
+		return new ResponseEntity("Post created successfully!",HttpStatus.CREATED);
 	}
 
 	

@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,6 +22,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.User;
 
 @Entity
@@ -56,6 +58,9 @@ public class Post implements Serializable{
 	@JsonIgnore
 	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
 	private Set<Likes> likes;
+	
+	@OneToOne(cascade= CascadeType.ALL)
+	private FileDB fileDB;
 	
 	
 
