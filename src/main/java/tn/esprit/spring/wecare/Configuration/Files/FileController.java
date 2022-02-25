@@ -1,4 +1,4 @@
-package tn.esprit.spring.wecare.Controllers.Files;
+package tn.esprit.spring.wecare.Configuration.Files;
 
 import java.net.MalformedURLException;
 import java.nio.file.Path;
@@ -24,11 +24,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
-
-import tn.esprit.spring.wecare.Entities.Files.FileDB;
-import tn.esprit.spring.wecare.Messages.Files.ResponseFile;
-import tn.esprit.spring.wecare.Messages.Files.ResponseMessage;
-import tn.esprit.spring.wecare.Services.Files.FileStorageService;
 @RestController
 @RequestMapping("")
 public class FileController {

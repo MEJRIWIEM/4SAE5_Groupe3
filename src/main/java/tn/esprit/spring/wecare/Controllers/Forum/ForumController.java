@@ -21,9 +21,9 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import tn.esprit.spring.wecare.Configuration.Files.ResponseMessage;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
-import tn.esprit.spring.wecare.Messages.Files.ResponseMessage;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Services.Forum.PostServiceImp;
 

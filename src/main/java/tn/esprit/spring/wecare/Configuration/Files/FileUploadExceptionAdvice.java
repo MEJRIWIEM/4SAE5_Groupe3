@@ -1,4 +1,4 @@
-package tn.esprit.spring.wecare.Messages.Files;
+package tn.esprit.spring.wecare.Configuration.Files;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;

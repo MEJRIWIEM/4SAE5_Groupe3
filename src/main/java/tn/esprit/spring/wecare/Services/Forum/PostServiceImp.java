@@ -13,10 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.User;
-import tn.esprit.spring.wecare.Entities.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
-import tn.esprit.spring.wecare.Repositories.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
 
 @Service

@@ -1,4 +1,4 @@
-package tn.esprit.spring.wecare.Messages.Files;
+package tn.esprit.spring.wecare.Configuration.Files;
 
 public class ResponseMessage {
 	  private String message;
