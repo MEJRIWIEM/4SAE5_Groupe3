@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 
 import lombok.Getter;
 import lombok.Setter;
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
@@ -43,6 +44,9 @@ public class User {
 	private String firstname;
 	private String lastname;
 	private String photo;
+	@OneToOne(cascade= CascadeType.ALL)
+	private FileDB fileDB;
+	
 	private Long numTel;
 	
 	@Enumerated(EnumType.STRING)
@@ -93,13 +97,14 @@ public class User {
 	
 
 	public User(String username, String email,
-			String firstname, String lastname, String photo, Long numTel, Departement departement,
+			String firstname, String lastname, String photo,FileDB fileDB, Long numTel, Departement departement,
 			String password) {
 		this.username = username;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.photo = photo;
+		this.fileDB=fileDB;
 		this.numTel = numTel;
 		this.departement = departement;
 		this.password = password;
