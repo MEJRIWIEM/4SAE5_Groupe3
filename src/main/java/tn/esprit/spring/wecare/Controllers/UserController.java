@@ -3,6 +3,13 @@ package tn.esprit.spring.wecare.Controllers;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
+import org.springframework.batch.core.JobParameters;
+import org.springframework.batch.core.JobParametersBuilder;
+import org.springframework.batch.core.launch.JobLauncher;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -39,6 +46,13 @@ public class UserController {
 	RoleRepository roleRepository;
 	@Autowired 
 	UserDetailsService userService;
+	
+	@Autowired
+	private JobLauncher jobLauncher;
+	   
+
+	@Autowired
+	private Job job;
 
 	
 	    //Get Employees List
@@ -93,6 +107,19 @@ public class UserController {
 			User us= userRepository.findByUsername(username).orElse(null);
 			
 			return "Admin Board." + us.getId() ;
+		}
+		
+		//Get Employees List
+		@GetMapping("/admin/employeesList")
+		@PreAuthorize("hasRole('ADMIN')")
+		public void EmployeesList ()throws Exception{
+			JobParameters jobParameters = new JobParametersBuilder()
+	                .addString("date", UUID.randomUUID().toString())
+	                .addLong("JobId",System.currentTimeMillis())
+	                .addLong("time",System.currentTimeMillis()).toJobParameters();
+			
+			JobExecution execution = jobLauncher.run(job, jobParameters);
+			System.out.println("STATUS :: "+execution.getStatus());
 		}
 
 
