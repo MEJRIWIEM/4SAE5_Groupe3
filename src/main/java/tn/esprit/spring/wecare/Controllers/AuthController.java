@@ -34,17 +34,23 @@ import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.ERole;
 import tn.esprit.spring.wecare.Entities.PasswordResetToken;
+import tn.esprit.spring.wecare.Entities.RefreshToken;
 import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Payloads.Requests.LoginRequest;
 import tn.esprit.spring.wecare.Payloads.Requests.PasswordReset;
 import tn.esprit.spring.wecare.Payloads.Requests.SignupRequest;
+import tn.esprit.spring.wecare.Payloads.Requests.TokenRefreshRequest;
 import tn.esprit.spring.wecare.Payloads.Responses.JwtResponse;
 import tn.esprit.spring.wecare.Payloads.Responses.MessageResponse;
+import tn.esprit.spring.wecare.Payloads.Responses.TokenRefreshResponse;
 import tn.esprit.spring.wecare.Repositories.PasswordTokenRepository;
 import tn.esprit.spring.wecare.Repositories.RoleRepository;
+import tn.esprit.spring.wecare.Repositories.SaveEmployeeToDb;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
+import tn.esprit.spring.wecare.Security.TokenRefreshException;
 import tn.esprit.spring.wecare.Security.jwt.JwtUtils;
+import tn.esprit.spring.wecare.Security.services.RefreshTokenService;
 import tn.esprit.spring.wecare.Security.services.UserDetailsImpl;
 
 
@@ -76,6 +82,10 @@ public final class AuthController {
 
     @Autowired
     PasswordTokenRepository passwordTokenRepository;
+    @Autowired
+    RefreshTokenService refreshTokenService;
+    @Autowired
+    SaveEmployeeToDb employeeRepo;
 
 	
 	@PostMapping("/signin")
@@ -85,14 +95,17 @@ public final class AuthController {
 				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
 		SecurityContextHolder.getContext().setAuthentication(authentication);
-		String jwt = jwtUtils.generateJwtToken(authentication);
-		
 		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
+
+		String jwt = jwtUtils.generateJwtToken(userDetails);
+	    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
 		List<String> roles = userDetails.getAuthorities().stream()
 				.map(item -> item.getAuthority())
 				.collect(Collectors.toList());
 
 		return ResponseEntity.ok(new JwtResponse(jwt, 
+												 refreshToken.getToken(),
 												 userDetails.getId(), 
 												 userDetails.getUsername(), 
 												 userDetails.getFirstname(),
@@ -100,11 +113,25 @@ public final class AuthController {
 												 userDetails.getPhoto(),
 												 userDetails.getNumTel(),
 												 userDetails.getDepartement(),
-												 userDetails.getEmail(),
-												 
-											
+												 userDetails.getEmail(),			 											
 												 roles));
 	}
+	
+	
+	@PostMapping("/refreshtoken")
+	  public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+	    String requestRefreshToken = request.getRefreshToken();
+	    return refreshTokenService.findByToken(requestRefreshToken)
+	        .map(refreshTokenService::verifyExpiration)
+	        .map(RefreshToken::getUser)
+	        .map(user -> {
+	          String token = jwtUtils.generateTokenFromUsername(user.getUsername());
+	          return ResponseEntity.ok(new TokenRefreshResponse(token, requestRefreshToken));
+	        })
+	        .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
+	            "Refresh token is not in database!"));
+	  }
+	
 	
 
 	@PostMapping("/signup")
@@ -269,5 +296,39 @@ public final class AuthController {
 	
 
 	}
+	
+	
+	/*public List<String> emailList(){
+		List<String> address = new ArrayList<String>();
+		List<String> usersAddress = new ArrayList<String>();
+		List<String> emailAddress = new ArrayList<String>();
+		
+
+
+		List<EmployeeList> employee = employeeRepo.findAll();
+		List<User> users = userRepository.findAll();
+
+         for (User x:users){	
+        	 usersAddress.add(x.getEmail());
+		   }
+         
+		for (EmployeeList i:employee){	
+			address.add(i.getEmail());
+		}
+		
+		for (String i : address)
+		{
+			while (usersAddress.contains(i)==false){
+				emailAddress.add(i);
+			}
+			
+		}
+		
+		return emailAddress;
+		
+	}
+		*/	
+	
+	
 	
 }
