@@ -7,14 +7,20 @@ import javax.validation.constraints.Size;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
+
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
+import tn.esprit.spring.wecare.Entities.Collaborators.TypeAds;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,6 +86,13 @@ public class User {
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Collaborator> collaborators= new HashSet<>();
+	
+	//relation with ads 
+	
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Advertising> ads;
 	
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
