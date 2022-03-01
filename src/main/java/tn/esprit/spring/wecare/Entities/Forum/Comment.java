@@ -1,6 +1,8 @@
 package tn.esprit.spring.wecare.Entities.Forum;
 
 import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -24,7 +26,7 @@ import tn.esprit.spring.wecare.Entities.User;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Comment  implements Serializable{
+public class Comment implements Serializable {
 	/**
 	 * 
 	 */
@@ -32,21 +34,21 @@ public class Comment  implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idComment;
-	
+
 	@NonNull
 	private String text;
-	private Date timestamp;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_user_id")
-    private User user;
-	
-	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_post_id")
-    private Post post;
-	
-	@OneToOne
-	private Notification notification;
+	private LocalDateTime timestamp;
 
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "the_user_id")
+	private User user;
+
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+	@JoinColumn(name = "the_post_id")
+	private Post post;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "notifId")
+	private Notification notification;
 
 }

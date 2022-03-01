@@ -1,13 +1,27 @@
 package tn.esprit.spring.wecare.Controllers.Forum;
 
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import tn.esprit.spring.wecare.Configuration.Files.ResponseMessage;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
@@ -20,20 +34,90 @@ public class ForumController {
 	UserRepository userRepository;
 	@Autowired
 	PostServiceImp PostService;
-	
+
+	// add a post
 	@PostMapping("/addPost")
-	public void addPost(@RequestBody Post post) {
+	public ResponseEntity<Object> addPost(@RequestBody Post post) {
 		String username;
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 		if (principal instanceof UserDetails) {
-			username = ((UserDetails)principal).getUsername();
-			} else {
-			 username = principal.toString();
-			}
-		User us= userRepository.findByUsername(username).orElse(null);
-		PostService.addPost(post,us);
-		
+			username = ((UserDetails) principal).getUsername();
+		} else {
+			username = principal.toString();
+		}
+		User us = userRepository.findByUsername(username).orElse(null);
+		return PostService.addPost(post, us);
+
 	}
-	
+	  @PostMapping("/addPostupload")
+	  public ResponseEntity<Object> uploadFile(@RequestPart(value="file",required=false) MultipartFile file,
+			  @RequestPart("post") Post post) throws IOException {
+		  
+		  String username;
+			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+			if (principal instanceof UserDetails) {
+				username = ((UserDetails) principal).getUsername();
+			} else {
+				username = principal.toString();
+			}
+			User us = userRepository.findByUsername(username).orElse(null);
+	   
+	    return  PostService.addPost(file, post, us);
+	     
+	  }
+
+	// see the list of posts
+	@GetMapping("/ListOfPosts")
+	public List<Post> RetrievePosts() {
+		return PostService.RetrievePosts();
+	}
+
+	// see my posts
+	@GetMapping("/ListOfMyPosts")
+	public List<Post> RetrieveMyPosts() {
+		String username;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal instanceof UserDetails) {
+			username = ((UserDetails) principal).getUsername();
+		} else {
+			username = principal.toString();
+		}
+		User us = userRepository.findByUsername(username).orElse(null);
+		return PostService.RetrieveMyPosts(us);
+	}
+
+	// see a specific post with his id
+	@GetMapping("/RetrivePost/{id}")
+	public Post RetrievePost(@PathVariable("id") Long id) {
+		return PostService.RetrievePost(id);
+	}
+
+	// delete his post
+	@DeleteMapping("/DeletePost/{id}")
+	public ResponseEntity<Object> DeletePost(@PathVariable("id") Long id) {
+		String username;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal instanceof UserDetails) {
+			username = ((UserDetails) principal).getUsername();
+		} else {
+			username = principal.toString();
+		}
+		User us = userRepository.findByUsername(username).orElse(null);
+		return PostService.DeletePost(id, us);
+	}
+
+	// edit his post
+	@PutMapping("/EditPost/{id}")
+	public ResponseEntity<Object> EditPost(@PathVariable("id") Long id, @RequestBody Post post) {
+		String username;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal instanceof UserDetails) {
+			username = ((UserDetails) principal).getUsername();
+		} else {
+			username = principal.toString();
+		}
+		User us = userRepository.findByUsername(username).orElse(null);
+		return PostService.EditPost(id, us, post);
+	}
 
 }

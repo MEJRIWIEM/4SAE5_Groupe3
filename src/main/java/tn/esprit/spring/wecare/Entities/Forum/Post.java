@@ -1,22 +1,28 @@
 package tn.esprit.spring.wecare.Entities.Forum;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.Setter;
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.User;
 
 @Entity
@@ -38,19 +44,23 @@ public class Post implements Serializable{
 	private String title;
 	@NonNull
 	private String text;
-	private Date timestamp;
+	private LocalDateTime timestamp;
 	private String picture;
 	// 0 or many posts can belong to a user
+	@JsonIgnore
 	@ManyToOne
 	private User user;
 	
 	
-	
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
 	private Set<Comment> comments;
-	
-	@OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
+	@JsonIgnore
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
 	private Set<Likes> likes;
+	
+	@OneToOne(cascade= CascadeType.ALL)
+	private FileDB fileDB;
 	
 	
 
