@@ -99,6 +99,8 @@ public class User {
 	private Set<Rating> ratings;
 	public User() {
 	}
+	
+	
 
 	public User(String username, String email, String password,String firstname) {
 		this.username = username;

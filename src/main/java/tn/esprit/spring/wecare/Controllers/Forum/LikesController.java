@@ -35,17 +35,6 @@ public class LikesController {
 		return likesService.LikePost(us, id);
 	}
 
-	@DeleteMapping("/deleteLike/{id}")
-	public ResponseEntity RemoveLikePost(@PathVariable("id") Long id) {
-		String username;
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (principal instanceof UserDetails) {
-			username = ((UserDetails) principal).getUsername();
-		} else {
-			username = principal.toString();
-		}
-		User us = userRepository.findByUsername(username).orElse(null);
-		return likesService.RemoveLikePost(us, id);
-	}
+	
 
 }

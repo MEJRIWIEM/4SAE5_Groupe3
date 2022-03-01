@@ -11,9 +11,13 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -45,22 +49,33 @@ public class Post implements Serializable{
 	@NonNull
 	private String text;
 	private LocalDateTime timestamp;
-	private String picture;
+	private String fileURL;
 	// 0 or many posts can belong to a user
+	 
+	 //ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
+		//.path(p.getFileDB().getId()).toUriString()+ System.lineSeparator()
 	@JsonIgnore
 	@ManyToOne
 	private User user;
 	
 	
 	@JsonIgnore
-	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
 	private Set<Comment> comments;
 	@JsonIgnore
-	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
 	private Set<Likes> likes;
 	
-	@OneToOne(cascade= CascadeType.ALL)
+	
+	@OneToOne(cascade=CascadeType.ALL)
+    @JoinColumn(name="file_id")
+	@JsonIgnore
 	private FileDB fileDB;
+	
+
+
+
+
 	
 	
 

@@ -8,5 +8,4 @@ import tn.esprit.spring.wecare.Entities.Forum.Likes;
 
 public interface LikesService {
 	public  ResponseEntity LikePost(User user,  Long id);
-	public ResponseEntity RemoveLikePost(User user,  Long id);
 }

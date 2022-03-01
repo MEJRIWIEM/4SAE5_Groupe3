@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -47,8 +48,8 @@ public class Comment implements Serializable {
 	@JoinColumn(name = "the_post_id")
 	private Post post;
 
-	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "notifId")
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "notif_id", referencedColumnName = "idNotification")
 	private Notification notification;
 
 }

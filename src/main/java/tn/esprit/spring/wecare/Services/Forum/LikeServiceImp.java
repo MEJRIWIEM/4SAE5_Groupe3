@@ -43,8 +43,11 @@ public class LikeServiceImp implements LikesService {
 			for (Likes l : likes) {
 				if ((l.getPost().equals(post))) {
 					if (l.getUser().equals(user))
-
-						return new ResponseEntity<String>("User already liked this post!", HttpStatus.OK);
+					{
+						likesRepository.delete(l);
+						return new ResponseEntity<String>("Like removed!", HttpStatus.OK);
+					}
+						
 				}
 			}
 			if (p.getIdPost().equals(id)) {
@@ -68,24 +71,5 @@ public class LikeServiceImp implements LikesService {
 		return new ResponseEntity<String>("Post was not liked!", HttpStatus.BAD_REQUEST);
 	}
 
-	@Override
-	public ResponseEntity RemoveLikePost(User user, Long id) {
-		List<Likes> likes = likesRepository.findAll();
-		Post post = postRepository.getById(id);
-
-			for (Likes l : likes) {
-				if ((l.getPost().equals(post))) {
-					if (l.getUser().equals(user))
-						likesRepository.delete(l);
-						return new ResponseEntity<String>("User removed like from this post!", HttpStatus.OK);
-				}}
-			
-				return new ResponseEntity<String>("User cannot remove like from this post!", HttpStatus.OK);
-			
-
-
-
-		// TODO Auto-generated method stub
-	}
-
+	
 }
