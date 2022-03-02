@@ -12,9 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import tn.esprit.spring.wecare.Entities.User;
+import tn.esprit.spring.wecare.Entities.Forum.BadWordFilter;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
+import tn.esprit.spring.wecare.Entities.Forum.StringSimilarity;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.CommentRepository;
 import tn.esprit.spring.wecare.Repositories.Forum.NotificationRepository;
@@ -29,18 +31,19 @@ public class CommentServiceImp implements CommentService{
 	UserRepository userRepository;
 	@Autowired
 	NotificationRepository notificationRepository;
+	StringSimilarity stringSimilarity;
 	
 	@Override
 	@Transactional
 	public ResponseEntity  CommentPost(User user, Comment comment, Long id){
 		Notification notification = new Notification();
-		
+		String output = BadWordFilter.getCensoredText(comment.getText());
 		List<Post> posts = postRepository.findAll();
 
 		 for(Post p: posts){
 			 if(p.getIdPost().equals(id))
 			 {
-				 
+				 comment.setText(output);
 			comment.setPost(p);
 			comment.setUser(user);
 			comment.setTimestamp(LocalDateTime.now());
@@ -89,6 +92,13 @@ public class CommentServiceImp implements CommentService{
 
 		}
 		return new ResponseEntity<String>("Failed to edit comment!",HttpStatus.BAD_REQUEST);
+	}
+
+	@Override
+	public String RetrieveCommentById(Long id) {
+		Comment comment = commentRepository.findById(id).orElse(null);
+		String c= comment.getUser().getUsername() +" : "+comment.getText()  ;
+		return c;
 	}
 
 }
