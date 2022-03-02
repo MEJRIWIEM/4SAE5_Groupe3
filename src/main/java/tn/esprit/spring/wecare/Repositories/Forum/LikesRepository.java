@@ -8,6 +8,5 @@ import tn.esprit.spring.wecare.Entities.Forum.Notification;
 
 @Repository
 public interface LikesRepository extends JpaRepository<Likes, Long>{
-	public Likes getLikesByNotif(Notification notification);
 
 }

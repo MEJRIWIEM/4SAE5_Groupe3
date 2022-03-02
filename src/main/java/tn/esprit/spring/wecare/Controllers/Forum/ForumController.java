@@ -3,7 +3,12 @@ package tn.esprit.spring.wecare.Controllers.Forum;
 import static org.assertj.core.api.Assertions.not;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
+import java.awt.Desktop;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,11 +41,17 @@ import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Configuration.Files.ResponseFile;
 import tn.esprit.spring.wecare.Configuration.Files.ResponseMessage;
 import tn.esprit.spring.wecare.Entities.User;
+import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Services.Forum.NotificationService;
 import tn.esprit.spring.wecare.Services.Forum.PostServiceImp;
+import java.awt.*;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 @RestController
 @RequestMapping("/api/forumCrud")
@@ -118,8 +129,73 @@ public class ForumController {
 		return notificationService.showMyNotif(us);
 		
 	}
-	
+	@GetMapping("/shareOnLinkedin")
+	public   URI ShareOnLinkedin() throws URISyntaxException{
+		String myUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social";
+		URI myURI = new URI(myUrl);
+		return myURI;
+		/*
+		 return ResponseEntity.status(HttpStatus.FOUND)
+			        .location(URI.create("https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social"))
+			        .build();
+	*/}
+	@GetMapping("/getToken")
+	public String getToken(@RequestBody String code){
+		 System.out.println(code);
 
+		 try {
+			 String string = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code+"&redirect_uri=https://oauth.pstmn.io/v1/callback&client_id=782v4yfo7xy5jw&client_secret=SQEafEMTbtmQ1juw";
+			 System.out.println(string);
+			 URL url = new URL(string);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            conn.setRequestMethod("GET");
+	            conn.setRequestProperty("Accept", "application/json");
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : "
+	                        + conn.getResponseCode());
+	            }
+	            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+	            BufferedReader br = new BufferedReader(in);
+	            String output;
+	            while ((output = br.readLine()) != null) {
+	                System.out.println(output);
+	                return output;
+	                
+	            }
+	            conn.disconnect();
 
+	        } catch (Exception e) {
+	            System.out.println("Exception in NetClientGet:- " + e);
+	        }
+		return "Token has expired, get a new one.";
+	}
 	
+	public String getIdUser(){
+
+		 try {
+			 String string = "https://api.linkedin.com/v2/me";
+			 System.out.println(string);
+			 URL url = new URL(string);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            conn.setRequestMethod("GET");
+	            conn.setRequestProperty("Accept", "application/json");
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : "
+	                        + conn.getResponseCode());
+	            }
+	            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+	            BufferedReader br = new BufferedReader(in);
+	            String output;
+	            while ((output = br.readLine()) != null) {
+	                System.out.println(output);
+	                return output;
+	                
+	            }
+	            conn.disconnect();
+
+	        } catch (Exception e) {
+	            System.out.println("Exception in NetClientGet:- " + e);
+	        }
+		return "User not defined.";
+	}
 }

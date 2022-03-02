@@ -9,5 +9,4 @@ import tn.esprit.spring.wecare.Entities.Forum.Notification;
 
 @Repository
 public interface CommentRepository  extends JpaRepository<Comment, Long>{
-	public Comment getCommentByNotification (Notification notification);
 	}

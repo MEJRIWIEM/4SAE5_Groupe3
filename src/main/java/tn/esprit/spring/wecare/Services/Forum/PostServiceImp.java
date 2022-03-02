@@ -28,6 +28,7 @@ import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
+import tn.esprit.spring.wecare.Entities.Forum.StringSimilarity;
 import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
 
 @Service
@@ -38,6 +39,8 @@ public class PostServiceImp implements PostService {
 	FileDBRepository fileDBRepository;
 	@Autowired
 	private FileStorageService storageService;
+	StringSimilarity stringSimilarity;
+
 
 	@Override
 	public List<Post> RetrievePosts() {
@@ -120,6 +123,18 @@ public class PostServiceImp implements PostService {
 	public ResponseEntity addPost(MultipartFile file, Post post, User user) throws IOException {
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 		FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+		List<Post> posts = postRepository.findAll();
+		
+		for(Post p : posts){
+			if(stringSimilarity.similarity(p.getTitle(), post.getTitle())>0.500 ){
+				return new ResponseEntity("A similar post already exists! Try to enter a new title please.", HttpStatus.CREATED);
+				
+			}
+			if(stringSimilarity.similarity(p.getText(), post.getText())>0.500 ){
+				return new ResponseEntity("A similar post already exists! Try to enter a new content please.", HttpStatus.CREATED);
+				
+			}
+		}
 		if (file != null) {
 			fileDBRepository.save(FileDB);
 			post.setFileDB(FileDB);

@@ -47,12 +47,12 @@ public class NotificationServiceImp implements NotificationService {
 				if(likes2.getNotif().equals(n))
 				{
 					if(value < 60)
-						messages.add(likes2.getUser().getFirstname()+" liked your post "+
+						messages.add(likes2.getUser().getUsername()+" liked your post "+
 								String.format("%02d minutes ago",
 										TimeUnit.MILLISECONDS.toMinutes(millis)
 												- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))));
 					else 
-						messages.add(likes2.getUser().getFirstname()+" liked your post");
+						messages.add(likes2.getUser().getUsername()+" liked your post");
 				}
 					
 
@@ -66,32 +66,18 @@ public class NotificationServiceImp implements NotificationService {
 				if(comment.getNotification().equals(n))
 				{
 					if(value < 60)
-						messages.add(comment.getUser().getFirstname()+" commented your post "+
+						messages.add(comment.getUser().getUsername()+" commented your post "+
 								String.format("%02d minutes ago",
 										TimeUnit.MILLISECONDS.toMinutes(millis)
 												- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))));
 					else 
-						messages.add(comment.getUser().getFirstname()+" commented your post");
+						messages.add(comment.getUser().getUsername()+" commented your post");
 				}
 					
 
 				
 			}
-		}/*
-		for (Likes l : likes) {
-			Duration dur = Duration.between(l.getTimestamp(),LocalDateTime.now());
-			long millis = dur.toMillis();
-			long value = TimeUnit.MILLISECONDS.toMinutes(millis)
-					- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis));
-			if(value < 60)
-			messages.add(l.getUser().getFirstname() + " liked your post "
-					+ String.format("%02d minutes ago",
-							TimeUnit.MILLISECONDS.toMinutes(millis)
-									- TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis))
-							));
-			else messages.add(l.getUser().getFirstname() + " liked your post ");
-		}*/
-	
+		}
 		
 
 		
