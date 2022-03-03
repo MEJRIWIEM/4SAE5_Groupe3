@@ -37,6 +37,7 @@ public class UserDetailsImpl implements UserDetails {
 	
 	private Long numTel;
 	
+	
 	@Enumerated(EnumType.STRING)
 	private Departement departement;
 

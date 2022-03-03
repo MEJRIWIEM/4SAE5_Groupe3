@@ -27,71 +27,57 @@ public class EvaluationController {
 	@Autowired
 	EvaluationServiceImp EvaluationService;
 	
-	@PostMapping("/addEvaluation")
-	public void addBadge(@RequestBody Evaluation evaluation) {
-		String username;
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (principal instanceof UserDetails) {
-			username = ((UserDetails)principal).getUsername();
-			} else {
-			 username = principal.toString();
-			}
-		User us= userRepository.findByUsername(username).orElse(null);
-		EvaluationService.addEvaluation(evaluation,us);
+	@PostMapping("/addEvaluation/{id_user_evaluated}")
+	public void addBadge(@RequestBody Evaluation evaluation ,@PathVariable("id_user_evaluated") Long id_user_evaluated) {
+		User us = getTheCurrentUser();
+		EvaluationService.addEvaluation(evaluation,us,id_user_evaluated);
 		
 	}
-	// see the list of evaluations
+	// see the list of evaluations i did 
 		@GetMapping("/ListOfEvaluations")
 		public List<Evaluation> RetrieveEvaluations() {
-			return EvaluationService.RetrieveEvaluations();
+			User us = getTheCurrentUser();
+			return EvaluationService.RetrieveEvaluations(us);
 		}
 
-		// see my evaluations
+		// see my evaluations done by other users to me
 		@GetMapping("/ListOfMyEvaluations")
 		public List<Evaluation> RetrieveMyEvaluations() {
-			String username;
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (principal instanceof UserDetails) {
-				username = ((UserDetails) principal).getUsername();
-			} else {
-				username = principal.toString();
-			}
-			User us = userRepository.findByUsername(username).orElse(null);
+			User us = getTheCurrentUser();
 			return EvaluationService.RetrieveMyEvaluations(us);
 		}
 
-	/*	// see a specific evaluation with his id
-		@GetMapping("/RetriveEvaluation/{id}")
-		public Badge RetrieveEvaluation(@PathVariable("id") Long id) {
-			return EvaluationService.RetrieveEvaluation(id);
-		}*/
+		// see a specific badge with his id
+				@GetMapping("/RetriveEvaluation/{id}")
+				public Evaluation RetrieveEvaluation(@PathVariable("id") Long id) {
+					return EvaluationService.RetrieveEvaluation(id);
+				}
 
 		// delete his evaluation
 		@DeleteMapping("/DeleteEvaluation/{id}")
 		public ResponseEntity<Object> DeleteEvaluation(@PathVariable("id") Long id) {
-			String username;
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (principal instanceof UserDetails) {
-				username = ((UserDetails) principal).getUsername();
-			} else {
-				username = principal.toString();
-			}
-			User us = userRepository.findByUsername(username).orElse(null);
+			User us = getTheCurrentUser();
 			return EvaluationService.DeleteEvaluation(id, us);
 		}
 
 		// edit his evaluation
-	/*	@PutMapping("/EditEvaluation/{id}")
-		public ResponseEntity<Object> EditEvaluation(@PathVariable("id") Long id, @RequestBody Badge post) {
-			String username;
-			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-			if (principal instanceof UserDetails) {
-				username = ((UserDetails) principal).getUsername();
-			} else {
-				username = principal.toString();
-			}
-			User us = userRepository.findByUsername(username).orElse(null);
-			return EvaluationService.EditEvaluation(id, us, post);
-		}*/
+		@PutMapping("/EditEvaluation/{id}")
+		public ResponseEntity<Object> EditEvaluation(@PathVariable("id") Long id, @RequestBody Evaluation evaluation) {
+			User us = getTheCurrentUser();
+			return EvaluationService.EditEvaluation(id, us, evaluation);
+		}
+		
+		//get the current user
+				public User getTheCurrentUser() {
+					String username;
+					Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+					if (principal instanceof UserDetails) {
+						username = ((UserDetails) principal).getUsername();
+					} else {
+						username = principal.toString();
+					}
+					User us = userRepository.findByUsername(username).orElse(null);
+					return us;
+				}
 	
 }

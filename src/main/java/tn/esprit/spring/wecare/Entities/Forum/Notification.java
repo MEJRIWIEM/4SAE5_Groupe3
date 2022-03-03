@@ -33,8 +33,9 @@ public class Notification implements Serializable{
 	@OneToOne(mappedBy="notification")
 	private Comment comment;
 	
-	@OneToOne(mappedBy="notification")
+	@OneToOne(mappedBy="notif")
 	private Likes like;
+	
 	@ManyToOne
 	private User user;
 }

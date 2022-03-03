@@ -15,6 +15,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -44,10 +46,10 @@ public class Offer implements Serializable{/**
 	private TypeOffer typeOffer ;
 	
 	private Float percent;
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;
-	
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "collaborator_id")
     private Collaborator collaborator;

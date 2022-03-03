@@ -1,7 +1,9 @@
 package tn.esprit.spring.wecare.Entities.Collaborators;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.Date;
+
 
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,10 +15,13 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import tn.esprit.spring.wecare.Entities.User;
 
 @Entity
 @Getter
@@ -39,13 +44,19 @@ public class Advertising  implements Serializable{/**
 	@Enumerated(EnumType.STRING)
 	
 	private TypeAds typeAd ;
-	private Date dateCreated;
-	private Date dateEnd;
+	//@CreatedDate
+	private LocalDateTime dateCreated;
+
+	private LocalDateTime dateEnd;
 	private Integer targetNbrViews;
 	private Integer finalNbrViews;
 	private Float cost;
-	
-	
+	@JsonIgnore
+	@ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "user_id")
+    private User user;
+		
+	@JsonIgnore
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "collaborator_id")
     private Collaborator collaborator;

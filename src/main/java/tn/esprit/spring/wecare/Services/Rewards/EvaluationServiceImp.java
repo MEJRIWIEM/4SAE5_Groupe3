@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import tn.esprit.spring.wecare.Entities.User;
+import tn.esprit.spring.wecare.Entities.Rewards.BadWordFilter;
 import tn.esprit.spring.wecare.Entities.Rewards.Badge;
 import tn.esprit.spring.wecare.Entities.Rewards.Evaluation;
 import tn.esprit.spring.wecare.Repositories.Rewards.BadgeRepository;
@@ -20,17 +21,27 @@ public class EvaluationServiceImp implements EvaluationService {
 	@Autowired
 	EvaluationRepository evaluationRepository;
 	@Override
-	public void addEvaluation(Evaluation evaluation, User user) {
+	public void addEvaluation(Evaluation evaluation, User user, Long id_user_evaluated) {
 		// TODO Auto-generated method stub
-	//	evaluation.setUsers(user);
-		evaluationRepository.save(evaluation);
+		String output = BadWordFilter.getCensoredText(evaluation.getText());
+		evaluation.setText(output);
+	    evaluation.setUser(user);
+	    evaluation.setId_user_evaluated(id_user_evaluated);
+	 	evaluationRepository.save(evaluation);
 		
 	}
-
 	@Override
-	public List<Evaluation> RetrieveEvaluations() {
+	public List<Evaluation> RetrieveEvaluations(User user) {
 		// TODO Auto-generated method stub
-		return 	 evaluationRepository.findAll();
+		List<Evaluation> evaluations = evaluationRepository.findAll();
+		 List<Evaluation> myEvaluations = new ArrayList<Evaluation>();
+		 for(Evaluation  e:evaluations){
+			 if(e.getUser().equals(user))
+			 {
+				 myEvaluations.add(e);
+			 }
+		 }
+		return  myEvaluations;
 		
 	}
 
@@ -40,7 +51,7 @@ public class EvaluationServiceImp implements EvaluationService {
 		List<Evaluation> evaluations = evaluationRepository.findAll();
 		 List<Evaluation> myEvaluations = new ArrayList<Evaluation>();
 		 for(Evaluation  e:evaluations){
-			 if(e.getUsers().equals(user))
+			 if(e.getId_user_evaluated().equals(user.getId()))
 			 {
 				 myEvaluations.add(e);
 			 }
@@ -60,13 +71,13 @@ public class EvaluationServiceImp implements EvaluationService {
 		List<Evaluation> evaluations = evaluationRepository.findAll();
 
 		 for(Evaluation e: evaluations){
-			 if(e.getUsers().equals(user)&& e.getEvaluation_id().equals(id))
+			 if(e.getUser().equals(user)&& e.getEvaluation_id().equals(id))
 			 {
 				 evaluationRepository.delete(e);
-				return new ResponseEntity("Post deleted successfully!",HttpStatus.OK);
+				return new ResponseEntity("Evaluation deleted successfully!",HttpStatus.OK);
 			 }
 		 }
-		 return new ResponseEntity("Post was not deleted!",HttpStatus.CONFLICT);
+		 return new ResponseEntity("Evaluation was not deleted!",HttpStatus.CONFLICT);
 	}
 
 	@Override
@@ -75,14 +86,17 @@ public class EvaluationServiceImp implements EvaluationService {
 		List<Evaluation> evaluations = evaluationRepository.findAll();
 
 		 for(Evaluation e: evaluations){
-			 if(e.getUsers().equals(user)&& e.getEvaluation_id().equals(id))
+			 if(e.getUser().equals(user)&& e.getEvaluation_id().equals(id))
 			 {
 				e.setText(evaluation.getText());
 				e.setObjet(evaluation.getObjet());
-				return new ResponseEntity("Post edited successfully!",HttpStatus.OK);
+				//e.setId_user_evaluated(evaluation.getId_user_evaluated());
+				evaluationRepository.save(e);
+			
+				return new ResponseEntity("Evaluation edited successfully!",HttpStatus.OK);
 			 }
 		 }
-		 return new ResponseEntity("Post was not edited!",HttpStatus.CONFLICT);
+		 return new ResponseEntity("Evaluation was not edited!",HttpStatus.CONFLICT);
 	}
 
 }

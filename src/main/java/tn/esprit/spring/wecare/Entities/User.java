@@ -5,8 +5,18 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import lombok.Getter;
+import lombok.Setter;
+
+import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
+
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
+import tn.esprit.spring.wecare.Entities.Collaborators.TypeAds;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
@@ -14,6 +24,7 @@ import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Entities.Rewards.Badge;
 import tn.esprit.spring.wecare.Entities.Rewards.Evaluation;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,6 +34,8 @@ import java.util.Set;
 			@UniqueConstraint(columnNames = "username"),
 			@UniqueConstraint(columnNames = "email") 
 		})
+@Getter
+@Setter
 public class User {
 	
 	@Id
@@ -41,6 +54,9 @@ public class User {
 	private String firstname;
 	private String lastname;
 	private String photo;
+	@OneToOne(cascade= CascadeType.ALL)
+	private FileDB fileDB;
+	
 	private Long numTel;
 	
 	@Enumerated(EnumType.STRING)
@@ -68,18 +84,19 @@ public class User {
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Notification> notifications;
-	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-	private Set<Likes> likes;
+
 	
 	//relation with collaborator 
 	
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Collaborator> collaborators= new HashSet<>();
 	
-	//relation with badge
+	//relation with ads 
 	
-	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
-	private Set<Badge> badges= new HashSet<>();
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Advertising> ads;
 	
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
@@ -87,9 +104,14 @@ public class User {
 	public User() {
 	}
 	
-	//A user can have  0 or many evaluations
 	@ManyToMany
-	private Set<Evaluation> evaluations;
+	@JsonIgnore
+	private Set<Badge> badges = new HashSet<>();
+	
+	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
+	private Set<Evaluation> evaluations= new HashSet<>();
+	
+	
 
 	public User(String username, String email, String password,String firstname) {
 		this.username = username;
@@ -101,13 +123,14 @@ public class User {
 	
 
 	public User(String username, String email,
-			String firstname, String lastname, String photo, Long numTel, Departement departement,
+			String firstname, String lastname, String photo,FileDB fileDB, Long numTel, Departement departement,
 			String password) {
 		this.username = username;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.photo = photo;
+		this.fileDB=fileDB;
 		this.numTel = numTel;
 		this.departement = departement;
 		this.password = password;
@@ -193,5 +216,10 @@ public class User {
 	public void setNumTel(Long numTel) {
 		this.numTel = numTel;
 	}
+	public void setBadges(Badge b) {
+		this.badges= (Set<Badge>) b;
+		
+	}
+	
 
 }

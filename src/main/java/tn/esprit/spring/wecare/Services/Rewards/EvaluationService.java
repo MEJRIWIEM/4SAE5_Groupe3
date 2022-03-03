@@ -8,9 +8,9 @@ import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Rewards.Evaluation;
 
 public interface EvaluationService {
-	public void addEvaluation(Evaluation evalutation, User user);
+	public void addEvaluation(Evaluation evalutation, User user ,Long id_user_evaluated);
 	//see the list of Evaluation
-		public List<Evaluation> RetrieveEvaluations();
+		public List<Evaluation> RetrieveEvaluations(User user);
 		//see the list of user's Evaluations
 		public List<Evaluation> RetrieveMyEvaluations( User user);
 		//see a specific Evaluation with his id
