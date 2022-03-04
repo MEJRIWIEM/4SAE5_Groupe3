@@ -169,11 +169,12 @@ public class ForumController {
 	        }
 		return "Token has expired, get a new one.";
 	}
-	
-	public String getIdUser(){
+	@GetMapping("/getIdUser")
+	public void getIdUser(@RequestBody String token){
+System.out.println(token);
 
 		 try {
-			 String string = "https://api.linkedin.com/v2/me";
+			 String string = "https://api.linkedin.com/v2/me?oauth2_access_token="+token;
 			 System.out.println(string);
 			 URL url = new URL(string);
 	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -188,7 +189,7 @@ public class ForumController {
 	            String output;
 	            while ((output = br.readLine()) != null) {
 	                System.out.println(output);
-	                return output;
+	              
 	                
 	            }
 	            conn.disconnect();
@@ -196,6 +197,5 @@ public class ForumController {
 	        } catch (Exception e) {
 	            System.out.println("Exception in NetClientGet:- " + e);
 	        }
-		return "User not defined.";
 	}
 }
