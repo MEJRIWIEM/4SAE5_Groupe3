@@ -33,11 +33,11 @@ public class Rating implements Serializable {/**
 	private Integer value;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "the_offer_id")
+    @JoinColumn(name = "offer_id")
     private Offer offer;
 	
 }

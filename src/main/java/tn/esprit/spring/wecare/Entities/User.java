@@ -7,13 +7,20 @@ import javax.validation.constraints.Size;
 
 import lombok.Getter;
 import lombok.Setter;
+
+import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
+
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
+import tn.esprit.spring.wecare.Entities.Collaborators.TypeAds;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +50,9 @@ public class User {
 	private String firstname;
 	private String lastname;
 	private String photo;
+	@OneToOne(cascade= CascadeType.ALL)
+	private FileDB fileDB;
+	
 	private Long numTel;
 	
 	@Enumerated(EnumType.STRING)
@@ -77,6 +87,13 @@ public class User {
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Collaborator> collaborators= new HashSet<>();
 	
+	//relation with ads 
+	
+	
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+	private Set<Advertising> ads;
+	
 	
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;
@@ -95,13 +112,14 @@ public class User {
 	
 
 	public User(String username, String email,
-			String firstname, String lastname, String photo, Long numTel, Departement departement,
+			String firstname, String lastname, String photo,FileDB fileDB, Long numTel, Departement departement,
 			String password) {
 		this.username = username;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.photo = photo;
+		this.fileDB=fileDB;
 		this.numTel = numTel;
 		this.departement = departement;
 		this.password = password;
