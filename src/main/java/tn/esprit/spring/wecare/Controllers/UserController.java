@@ -100,17 +100,20 @@ public class UserController {
 		public User editMyAccount(@Valid @RequestPart("user") User u, @RequestPart(value="file",required=false) MultipartFile file) throws IOException{
 			String x = encoder.encode(u.getPassword());
 			Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			
 			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 			FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
-
+            User us = getConnectedUser();
+			
 			if (file != null) {
 				fileDBRepository.save(FileDB);
 				u.setFileDB(FileDB);
 			}
 			
+			
+			
 			Set<Role> roles = new HashSet<>();
 			roles.add(userRole);
+			u.setId(us.getId());
 			u.setRoles(roles);
 			u.setPassword(x);
 			return userRepository.save(u);
@@ -128,9 +131,8 @@ public class UserController {
 
 	   //get user Details of the authorised user
 		
-		@GetMapping("/admin")
-		@PreAuthorize("hasRole('ADMIN')")
-		public String adminAccess() {
+		
+		public User getConnectedUser() {
 			String username;
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (principal instanceof UserDetails) {
@@ -138,9 +140,11 @@ public class UserController {
 				} else {
 				 username = principal.toString();
 				}
-			User us= userRepository.findByUsername(username).orElse(null);
+			User us = userRepository.findByUsername(username).orElse(null);
+
+			return us;
 			
-			return "Admin Board." + us.getId() ;
+			
 		}
 		
 	
@@ -223,7 +227,7 @@ public class UserController {
 				.body(new MessageResponse("Tous les employee ont deja un compte"));
     }else{
 		
-	    emailSender.send(constructEmailRegestration("Register Wecare","lien",address));
+	    emailSender.send(constructEmailRegestration("Register Wecare","http://localhost:8089/SpringMVC/api/auth/signup",address));
 		return ResponseEntity.ok(new MessageResponse("email sent!"));
     }
 	}
