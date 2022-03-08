@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
+import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 
 import tn.esprit.spring.wecare.Services.Collaborators.CollaboratorService;
@@ -66,6 +67,11 @@ public class OfferController {
 	@GetMapping("/ListOfOffer")
 	public List<Offer> RetrieveOffer() {
 		return 	offerService.RetrieveOffer();
+	}
+ 	
+ 	@GetMapping("/getOffersWithCollabortorId/{id}")
+	public List<Offer> getOffersWithCollabortorId(@PathVariable("id") Long id) {
+		return offerService.getOffersWithCollabortorId(id);
 	}
  	
  	

@@ -1,9 +1,11 @@
 package tn.esprit.spring.wecare.Entities.Collaborators;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,6 +16,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.Type;
+import org.springframework.beans.factory.annotation.Value;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -40,6 +45,15 @@ public class Offer implements Serializable{/**
 
 	
 	private String name;
+	
+	@Column(precision=2, scale=2, columnDefinition = "double default 0" )
+	//@Type(type = "big_decimal") 
+    //@Value("0.0")
+	//@Column(precision=10, scale=2)
+	private Double   ratingAvg ;
+	
+	@Column(columnDefinition = "integer default 0")
+    private Integer countUser;
 	
 	@Enumerated(EnumType.STRING)
 	

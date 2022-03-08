@@ -1,5 +1,6 @@
 package tn.esprit.spring.wecare.Controllers.Collaborators;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class RatingController {
 	@PostMapping("/ratingOffer/{id}")
 	public ResponseEntity ratingOffer(@PathVariable("id") Long id ,@RequestBody Rating rating) {
 		User us = getTheCurrentUser();
-		return ratingService.ratingOffer(us,rating, id);
+		return ratingService.ratingOffer(us, rating, id);
 	}
 	
 	
@@ -82,8 +83,13 @@ public class RatingController {
 		}
 		
 		@GetMapping("/AvgRatingByOffer/{id}")
-		public Double AvgRatingByOffer(@PathVariable("id") Offer id) {
+		public Double  AvgRatingByOffer(@PathVariable("id") Offer id) {
 			return ratingService.AvgRatingByOffer(id);
+		}
+		
+		@GetMapping("/nbrOfRatingUserByOffer/{id}")
+		public Integer nbrOfRatingUserByOffer(@PathVariable("id") Offer id) {
+			return ratingService.nbrOfRatingUserByOffer(id);
 		}
 
 		

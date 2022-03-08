@@ -1,5 +1,6 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,10 @@ public interface RatingService {
 	
 	public List<Rating>  getRatingWithOfferId(Long id);
 	
-	public Double AvgRatingByOffer(Offer id);
+	public Double  AvgRatingByOffer(Offer id);
+	
+	public Integer nbrOfRatingUserByOffer(Offer id);
+	
+	
 
 }

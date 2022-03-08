@@ -12,5 +12,5 @@ public interface OfferService {
 	public ResponseEntity DeleteOffer(  Long id);
 	public List<Offer> RetrieveOffer();
 	
-	//public List<Rating>  getRatingWithOfferId(Long id);
+	public List<Offer>  getOffersWithCollabortorId(Long id);
 }
