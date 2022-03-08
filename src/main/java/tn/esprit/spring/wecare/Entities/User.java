@@ -126,6 +126,19 @@ public class User {
 	}
 	
 
+	public User(String username,String email,String firstname, String lastname,String password, Set<Role> roles) {
+		super();
+		this.username = username;
+		this.email = email;
+		this.firstname = firstname;
+		this.lastname = lastname;
+		this.password = password;
+		this.roles = roles;
+	}
+	
+	
+	
+
 	public Departement getDepartement() {
 		return departement;
 	}
@@ -205,5 +218,8 @@ public class User {
 	public void setNumTel(Long numTel) {
 		this.numTel = numTel;
 	}
+
+
+
 
 }

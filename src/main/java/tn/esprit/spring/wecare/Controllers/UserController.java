@@ -139,7 +139,7 @@ public class UserController {
 		
 		@PostMapping("/admin/employeesList")
 		@PreAuthorize("hasRole('ADMIN')")
-	    public void saveUser(@RequestParam("image") MultipartFile multipartFile) throws Exception  {
+	    public void saveUser(@RequestParam("CSVfile") MultipartFile multipartFile) throws Exception  {
 	         
 	        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 	 
@@ -177,12 +177,24 @@ public class UserController {
 		
 		List<String> address = new ArrayList<String>();
 		
+		List<User> users = userRepository.findAll();
+		
+		
+		List<String> addressUsers = new ArrayList<String>();
 
+		
+		for (User u : users){
+			
+			addressUsers.add(u.getEmail());   
+		}
+		
 
 		List<EmployeeList> employee = employeeRepo.findAll();
 		for (EmployeeList i:employee){	
 			
+			if(!addressUsers.contains(i.getEmail())){
 			address.add(i.getEmail());
+			}
 		}
 		
 		
