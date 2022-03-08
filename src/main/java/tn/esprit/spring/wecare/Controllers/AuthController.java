@@ -319,16 +319,13 @@ public final class AuthController {
 
 	}
 	
-	@GetMapping("/shareOnLinkedin")
+	@GetMapping("/linkedInLogin")
 	public   URI ShareOnLinkedin() throws URISyntaxException{
 		String myUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social";
 		URI myURI = new URI(myUrl);
 		return myURI;
-		/*
-		 return ResponseEntity.status(HttpStatus.FOUND)
-			        .location(URI.create("https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social"))
-			        .build();
-	*/}
+		}
+	
 	@GetMapping("/getToken")
 	public String getToken(@RequestBody String code){
 		 System.out.println(code);
@@ -349,7 +346,31 @@ public final class AuthController {
 	            String output;
 	            while ((output = br.readLine()) != null) {
 	                System.out.println(output);
+	                String token= output.substring(output.indexOf("\":\"")+3, output.indexOf("\"expires_in\"")-2);
+	                String email = getEmailUser(token);
+	                List<User> users = userRepository.findAll();
+	        		
+	        		
+	        		List<String> addressUsers = new ArrayList<String>();
+
+	        		
+	        		for (User u : users){
+	        			
+	        			addressUsers.add(u.getEmail());   
+	        		}
+	        		
+	        		if(!addressUsers.contains(email)){
+	        			
+	        			createLinkedInUser(token);
+	        			
+	        			}
+
+	                
+
 	                return output;
+	                
+
+	                
 	                
 	            }
 	            conn.disconnect();
@@ -360,15 +381,11 @@ public final class AuthController {
 		return "Token has expired, get a new one.";
 	}
 	
-	@GetMapping("/getIdUser")
-	public void getIdUser(@RequestBody String token){
-
+	
+	public void createLinkedInUser(String token){
 
 		 try {
-			// String string = "https://api.linkedin.com/v2/me?oauth2_access_token="+token;
-			//email
-			 // String string ="https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))&oauth2_access_token="+token;
-			 //otherdata
+		
 			 String string ="https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,emailAddress,profilePicture(displayImage~:playableStreams))&oauth2_access_token="+token;
 
 			 System.out.println(string);
@@ -397,18 +414,11 @@ public final class AuthController {
 	                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(userRole);
-	                
-	                
+	                 
 	                User u = new User(id,email,firstname,Lastname,"changeit",roles);
-	                
-	                
+	                             
 	                userRepository.save(u);
-	                
-
-
-	                // String email= output.substring(output.indexOf("\"emailAddress\"")+16, output.indexOf("\"},\""));
-	               
-	                
+	  
 	            }
 	            conn.disconnect();
 
@@ -450,6 +460,7 @@ public final class AuthController {
 		
 	}
 
+	
 	
 
 	
