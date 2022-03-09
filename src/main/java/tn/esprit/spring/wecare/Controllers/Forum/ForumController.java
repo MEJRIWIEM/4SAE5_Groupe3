@@ -90,7 +90,7 @@ public class ForumController {
 	}
 
 	// see a specific post with his id
-	@GetMapping("/RetrivePost/{id}")
+	@GetMapping("/RetrievePost/{id}")
 	public Post RetrievePost(@PathVariable("id") Long id) {
 		return PostService.RetrievePost(id);
 	}
@@ -165,19 +165,11 @@ public class ForumController {
 		return "Token has expired, get a new one.";
 	}
 
-	@GetMapping("/shareOnLinkedin/{id}/")
+	@PostMapping("/shareOnLinkedin/{id}/")
 	public void getIdUser(@PathParam("token") String token, @PathVariable("id") Long id1) {
-		String y = Character.toString( (char) 128_512 );
 		Post post = PostService.RetrievePost(id1);
-		String content = "\uD83D\uDC8C"+post.getTitle().toUpperCase()+"\uD83D\uDC8C"
-				+ System.lineSeparator()+post.getText()+System.lineSeparator()+System.lineSeparator()
-				+"\u00A9"+ "Writer : " +post.getUser().getFirstname()+", www.wecare.tn";
-		JSONObject jsonObj = null;
-	    try {
-	        jsonObj = new JSONObject(content);
-	    } catch (JSONException e) {
-	        e.printStackTrace();
-	    }
+		
+	   
 		
 		String userId = "";
 		System.out.println(token);
