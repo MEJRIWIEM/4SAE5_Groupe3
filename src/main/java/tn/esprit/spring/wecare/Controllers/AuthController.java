@@ -1,6 +1,13 @@
 package tn.esprit.spring.wecare.Controllers;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
 import java.util.List;
@@ -22,6 +29,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -37,6 +45,7 @@ import tn.esprit.spring.wecare.Entities.PasswordResetToken;
 import tn.esprit.spring.wecare.Entities.RefreshToken;
 import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
+import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
 import tn.esprit.spring.wecare.Payloads.Requests.LoginRequest;
 import tn.esprit.spring.wecare.Payloads.Requests.PasswordReset;
 import tn.esprit.spring.wecare.Payloads.Requests.SignupRequest;
@@ -119,7 +128,7 @@ public final class AuthController {
 	
 	
 	@PostMapping("/refreshtoken")
-	  public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
+	public ResponseEntity<?> refreshtoken(@Valid @RequestBody TokenRefreshRequest request) {
 	    String requestRefreshToken = request.getRefreshToken();
 	    return refreshTokenService.findByToken(requestRefreshToken)
 	        .map(refreshTokenService::verifyExpiration)
@@ -147,7 +156,21 @@ public final class AuthController {
 					.badRequest()
 					.body(new MessageResponse("Error: Email is already in use!"));
 		}
-
+		
+		List<EmployeeList> employee = employeeRepo.findAll();
+		List<String> employeeAdress = new ArrayList<String>();
+		for (EmployeeList i:employee){	
+			
+			employeeAdress.add(i.getEmail());
+		}
+		
+		if (!employeeAdress.contains(signUpRequest.getEmail())) {
+			return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Sorry but you are not a member of our team"));
+		}
+		
+		
 		// Create new user's account
 		User user = new User(signUpRequest.getUsername(), 
 							 signUpRequest.getEmail(),
@@ -199,7 +222,7 @@ public final class AuthController {
 		return ResponseEntity.ok(new MessageResponse("User registered successfully!"));
 	}
 	
-// Create password reset token
+    // Create password reset token
 	
 	public void createPasswordResetTokenForUser(User user, String token) {
 		
@@ -216,7 +239,7 @@ public final class AuthController {
 			    return constructEmail("Reset Password", url, user);
 			}
 
-			private SimpleMailMessage constructEmail(String subject, String body, 
+    private SimpleMailMessage constructEmail(String subject, String body, 
 			  User user) {
 			    SimpleMailMessage email = new SimpleMailMessage();
 			    email.setSubject(subject);
@@ -260,7 +283,6 @@ public final class AuthController {
 	    return passToken.getExpiryDate().before(cal.getTime());
 	}
 	
-	
 	public void changeUserPassword(User user, String password) {
 	    user.setPassword(encoder.encode(password));
 	    userRepository.save(user);
@@ -297,37 +319,150 @@ public final class AuthController {
 
 	}
 	
+	@GetMapping("/linkedInLogin")
+	public   URI ShareOnLinkedin() throws URISyntaxException{
+		String myUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social";
+		URI myURI = new URI(myUrl);
+		return myURI;
+		}
 	
-	/*public List<String> emailList(){
-		List<String> address = new ArrayList<String>();
-		List<String> usersAddress = new ArrayList<String>();
-		List<String> emailAddress = new ArrayList<String>();
+	@GetMapping("/getToken")
+	public String getToken(@RequestBody String code){
+		 System.out.println(code);
+
+		 try {
+			 String string = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code+"&redirect_uri=https://oauth.pstmn.io/v1/callback&client_id=782v4yfo7xy5jw&client_secret=SQEafEMTbtmQ1juw";
+			 System.out.println(string);
+			 URL url = new URL(string);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            conn.setRequestMethod("GET");
+	            conn.setRequestProperty("Accept", "application/json");
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : "
+	                        + conn.getResponseCode());
+	            }
+	            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+	            BufferedReader br = new BufferedReader(in);
+	            String output;
+	            while ((output = br.readLine()) != null) {
+	                System.out.println(output);
+	                String token= output.substring(output.indexOf("\":\"")+3, output.indexOf("\"expires_in\"")-2);
+	                String email = getEmailUser(token);
+	                List<User> users = userRepository.findAll();
+	        		
+	        		
+	        		List<String> addressUsers = new ArrayList<String>();
+
+	        		
+	        		for (User u : users){
+	        			
+	        			addressUsers.add(u.getEmail());   
+	        		}
+	        		
+	        		if(!addressUsers.contains(email)){
+	        			
+	        			createLinkedInUser(token);
+	        			
+	        			}
+
+	                
+
+	                return output;
+	                
+
+	                
+	                
+	            }
+	            conn.disconnect();
+
+	        } catch (Exception e) {
+	            System.out.println("Exception in NetClientGet:- " + e);
+	        }
+		return "Token has expired, get a new one.";
+	}
+	
+	
+	public void createLinkedInUser(String token){
+
+		 try {
 		
+			 String string ="https://api.linkedin.com/v2/me?projection=(id,firstName,lastName,emailAddress,profilePicture(displayImage~:playableStreams))&oauth2_access_token="+token;
 
+			 System.out.println(string);
+			 URL url = new URL(string);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            conn.setRequestMethod("GET");
+	            conn.setRequestProperty("Accept", "application/json");
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : "
+	                        + conn.getResponseCode());
+	            }
+	            
+	            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+	            BufferedReader br = new BufferedReader(in);
+	            String output;
+	            while ((output = br.readLine()) != null) {
+	                System.out.println(output);
+	                
+	                String id= output.substring(output.indexOf("\"id\"")+6, output.indexOf("\"id\"")+16);
+	                String firstname= output.substring(output.indexOf("\":\"")+3, output.indexOf("\"},\""));
+	                int first = output.indexOf("preferredLocale"); 
+	                String Lastname= output.substring(output.indexOf("\"lastName\"")+34, output.indexOf("preferredLocale",first+1)-4);
+	                String email=getEmailUser(token);
+	                
+	                Set<Role> roles = new HashSet<>();
+	                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
+							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+					roles.add(userRole);
+	                 
+	                User u = new User(id,email,firstname,Lastname,"changeit",roles);
+	                             
+	                userRepository.save(u);
+	  
+	            }
+	            conn.disconnect();
 
-		List<EmployeeList> employee = employeeRepo.findAll();
-		List<User> users = userRepository.findAll();
-
-         for (User x:users){	
-        	 usersAddress.add(x.getEmail());
-		   }
-         
-		for (EmployeeList i:employee){	
-			address.add(i.getEmail());
-		}
-		
-		for (String i : address)
-		{
-			while (usersAddress.contains(i)==false){
-				emailAddress.add(i);
-			}
+	        } catch (Exception e) {
+	            System.out.println("Exception in NetClientGet:- " + e);
+	        }
+	}
+	
+	public String getEmailUser(String token){
+		 try {
 			
-		}
-		
-		return emailAddress;
+			  String string ="https://api.linkedin.com/v2/emailAddress?q=members&projection=(elements*(handle~))&oauth2_access_token="+token;
+			 
+			 System.out.println(string);
+			 URL url = new URL(string);
+	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+	            conn.setRequestMethod("GET");
+	            conn.setRequestProperty("Accept", "application/json");
+	            if (conn.getResponseCode() != 200) {
+	                throw new RuntimeException("Failed : HTTP Error code : "
+	                        + conn.getResponseCode());
+	            }
+	            
+	            InputStreamReader in = new InputStreamReader(conn.getInputStream());
+	            BufferedReader br = new BufferedReader(in);
+	            String output;
+	            while ((output = br.readLine()) != null) {
+	                System.out.println(output);
+	                String email= output.substring(output.indexOf("\"emailAddress\"")+16, output.indexOf("\"},\""));
+	               
+	                return email;
+	            }
+	            conn.disconnect();
+
+	        } catch (Exception e) {
+	            System.out.println("Exception in NetClientGet:- " + e);
+	        }
+		return null;
 		
 	}
-		*/	
+
+	
+	
+
 	
 	
 	

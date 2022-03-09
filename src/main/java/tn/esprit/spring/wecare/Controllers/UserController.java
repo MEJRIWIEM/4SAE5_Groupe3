@@ -1,11 +1,14 @@
 package tn.esprit.spring.wecare.Controllers;
 
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+
+import javax.validation.Valid;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
@@ -29,14 +32,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import tn.esprit.spring.wecare.Configuration.FileUploadUtil;
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.ERole;
 import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
@@ -65,6 +71,10 @@ public class UserController {
     SaveEmployeeToDb employeeRepo;
 	@Autowired
     private JavaMailSender emailSender;
+	
+	@Autowired
+	FileDBRepository fileDBRepository;
+	
 
 	@Autowired
 	 Job job;
@@ -87,11 +97,23 @@ public class UserController {
 		@PutMapping("/userEdit")
 		@PreAuthorize("hasRole('USER')")
 		@ResponseBody
-		public User editMyAccount(@RequestBody User u){
+		public User editMyAccount(@Valid @RequestPart("user") User u, @RequestPart(value="file",required=false) MultipartFile file) throws IOException{
 			String x = encoder.encode(u.getPassword());
 			Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+            User us = getConnectedUser();
+			
+			if (file != null) {
+				fileDBRepository.save(FileDB);
+				u.setFileDB(FileDB);
+			}
+			
+			
+			
 			Set<Role> roles = new HashSet<>();
 			roles.add(userRole);
+			u.setId(us.getId());
 			u.setRoles(roles);
 			u.setPassword(x);
 			return userRepository.save(u);
@@ -109,9 +131,8 @@ public class UserController {
 
 	   //get user Details of the authorised user
 		
-		@GetMapping("/admin")
-		@PreAuthorize("hasRole('ADMIN')")
-		public String adminAccess() {
+		
+		public User getConnectedUser() {
 			String username;
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 			if (principal instanceof UserDetails) {
@@ -119,9 +140,11 @@ public class UserController {
 				} else {
 				 username = principal.toString();
 				}
-			User us= userRepository.findByUsername(username).orElse(null);
+			User us = userRepository.findByUsername(username).orElse(null);
+
+			return us;
 			
-			return "Admin Board." + us.getId() ;
+			
 		}
 		
 	
@@ -139,7 +162,7 @@ public class UserController {
 		
 		@PostMapping("/admin/employeesList")
 		@PreAuthorize("hasRole('ADMIN')")
-	    public void saveUser(@RequestParam("image") MultipartFile multipartFile) throws Exception  {
+	    public void saveUser(@RequestParam("CSVfile") MultipartFile multipartFile) throws Exception  {
 	         
 	        String fileName = StringUtils.cleanPath(multipartFile.getOriginalFilename());
 	 
@@ -177,12 +200,24 @@ public class UserController {
 		
 		List<String> address = new ArrayList<String>();
 		
+		List<User> users = userRepository.findAll();
+		
+		
+		List<String> addressUsers = new ArrayList<String>();
 
+		
+		for (User u : users){
+			
+			addressUsers.add(u.getEmail());   
+		}
+		
 
 		List<EmployeeList> employee = employeeRepo.findAll();
 		for (EmployeeList i:employee){	
 			
+			if(!addressUsers.contains(i.getEmail())){
 			address.add(i.getEmail());
+			}
 		}
 		
 		
@@ -192,7 +227,7 @@ public class UserController {
 				.body(new MessageResponse("Tous les employee ont deja un compte"));
     }else{
 		
-	    emailSender.send(constructEmailRegestration("Register Wecare","lien",address));
+	    emailSender.send(constructEmailRegestration("Register Wecare","http://localhost:8089/SpringMVC/api/auth/signup",address));
 		return ResponseEntity.ok(new MessageResponse("email sent!"));
     }
 	}
