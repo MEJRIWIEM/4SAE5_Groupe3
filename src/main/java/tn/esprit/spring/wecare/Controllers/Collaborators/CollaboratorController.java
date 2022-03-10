@@ -3,7 +3,6 @@ package tn.esprit.spring.wecare.Controllers.Collaborators;
 
 import java.util.List;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
@@ -36,6 +34,15 @@ public class CollaboratorController {
 	
 	
 	
+	
+   // @PostMapping("send-mail")
+   // public ResponseEntity<String> sendMail(@RequestBody EmailRequestDto emailRequest) {
+   //     Map<String, String> model = new HashMap<>();
+   //     model.put("name", emailRequest.getName());
+    //    model.put("value", "Welcome to ASB Notebook!!");
+    //    String response = collaboratorService.sendMail(emailRequest, model);
+     //   return new ResponseEntity<>(response, HttpStatus.OK);
+   // }
 	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addCollaborator")

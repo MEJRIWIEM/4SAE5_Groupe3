@@ -1,6 +1,10 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
+import java.io.ByteArrayInputStream;
 import java.util.List;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
 import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
@@ -12,5 +16,9 @@ public interface OfferService {
 	public ResponseEntity DeleteOffer(  Long id);
 	public List<Offer> RetrieveOffer();
 	
-	//public List<Rating>  getRatingWithOfferId(Long id);
+	public List<Offer>  getOffersWithCollabortorId(Long id);
+	
+	public List<Offer> listAll() ;
+	
+	
 }

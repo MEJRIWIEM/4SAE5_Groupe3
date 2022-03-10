@@ -3,6 +3,8 @@ package tn.esprit.spring.wecare.Controllers.Collaborators;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -51,9 +53,13 @@ public class AdsController {
 			 username = principal.toString();
 			}
 		User us= userRepository.findByUsername(username).orElse(null);	
+		
+		
 		return adsService.addAdvirtising(us, ads, id);
 		
 	}
+	
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PutMapping("/updateAds/{id}")
 	public ResponseEntity EditAdvertising(@PathVariable("id") Long id, @RequestBody Advertising ads) {

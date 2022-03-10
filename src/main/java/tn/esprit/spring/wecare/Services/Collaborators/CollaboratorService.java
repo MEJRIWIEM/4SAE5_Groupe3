@@ -2,11 +2,7 @@ package tn.esprit.spring.wecare.Services.Collaborators;
 
 import java.util.List;
 
-import javax.mail.MessagingException;
-
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.web.multipart.MultipartFile;
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
@@ -14,7 +10,7 @@ import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 public interface CollaboratorService {
 	
 	
-	//public ResponseEntity contactAdmin(MultipartFile files) throws MailException, MessagingException;
+//	public String sendMail(EmailRequestDto request, Map<String, String> model);
 	public ResponseEntity addCollaborator(Collaborator collaborator ,User user);
 	
 	public List<Collaborator> RetrieveCollaborators();

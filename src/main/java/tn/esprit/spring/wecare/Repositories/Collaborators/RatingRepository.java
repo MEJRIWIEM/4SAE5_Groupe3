@@ -15,6 +15,11 @@ public interface RatingRepository extends JpaRepository<Rating,Long> {
 	
 	@Query("SELECT AVG(r.value) FROM Rating r WHERE r.offer like :id")
 	//@Query("SELECT AVG(r.value) FROM Rating r ")
-	public Double AvgRatingByOffer(@Param("id")Offer id);
+	public Double  AvgRatingByOffer(@Param("id")Offer id);
+	
+	
+	@Query("SELECT COUNT(r.user) FROM Rating r WHERE r.offer like :id")
+	//@Query("SELECT AVG(r.value) FROM Rating r ")
+	public Integer nbrOfRatingUserByOffer(@Param("id")Offer id);
 	
 }
