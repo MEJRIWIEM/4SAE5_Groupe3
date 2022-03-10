@@ -39,7 +39,8 @@ public class EvaluationController {
 		EvaluationService.unban(id_user_evaluated, banned_user_id);
 		
 	}
-	// see the list of evaluations i did 
+	// see the list of evaluations i did
+	
 		@GetMapping("/ListOfEvaluations")
 		public List<Evaluation> RetrieveEvaluations() {
 			User us = getTheCurrentUser();
