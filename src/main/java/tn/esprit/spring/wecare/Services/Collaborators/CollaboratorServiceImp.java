@@ -1,26 +1,28 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
 
-import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mail.MailException;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
+
 
 import tn.esprit.spring.wecare.Entities.User;
-import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
+import tn.esprit.spring.wecare.Entities.Collaborators.EmailRequestDto;
 import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
 
 
@@ -28,6 +30,8 @@ import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository
 public class CollaboratorServiceImp implements CollaboratorService{
 	@Autowired 
 	CollaboratorRepository collaboratorRepo;
+ 
+ 
 	
 	
 	
@@ -84,6 +88,12 @@ public class CollaboratorServiceImp implements CollaboratorService{
 		 return new ResponseEntity("Collaborator was not deleted!",HttpStatus.CONFLICT);
 	}
 
+
+	
+
+
+
+	
 	
 	
 

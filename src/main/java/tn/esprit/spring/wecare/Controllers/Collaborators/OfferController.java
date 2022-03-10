@@ -1,9 +1,20 @@
 package tn.esprit.spring.wecare.Controllers.Collaborators;
 
+import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,6 +26,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.xmlunit.util.Convert;
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
@@ -24,6 +36,7 @@ import tn.esprit.spring.wecare.Repositories.UserRepository;
 
 import tn.esprit.spring.wecare.Services.Collaborators.CollaboratorService;
 import tn.esprit.spring.wecare.Services.Collaborators.OfferService;
+import tn.esprit.spring.wecare.helper.offerExcelExporter;
 
 @RestController
 @RequestMapping("/api/offer")
@@ -74,6 +87,28 @@ public class OfferController {
 		return offerService.getOffersWithCollabortorId(id);
 	}
  	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	@GetMapping("/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException {
+		response.setContentType("application/octet-stream");
+		String headerKey = "Content-Disposition";
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date()).toString();
+		String filepath = "C:\\Users\\zidra\\4SAE5_Groupe3\\src\\main\\resources\\";
+		
+		String headervalue = "attachment; filename=ListOffersByRating.xlsx";
+		String paths=filepath + headervalue;
+
+		response.setHeader(headerKey, paths);
+		List<Offer> listOffers = offerService.listAll();
+		offerExcelExporter exp = new offerExcelExporter(listOffers);
+		exp.export(response);
+
+	}
  	
  	
 }

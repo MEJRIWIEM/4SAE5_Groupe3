@@ -1,16 +1,24 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
+import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Sort;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
@@ -20,6 +28,9 @@ import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.OfferRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.RatingRepository;
+
+import tn.esprit.spring.wecare.helper.offerExcelExporter;
+
 
 @Service
 public class OfferServiceImp implements OfferService{
@@ -32,7 +43,15 @@ public class OfferServiceImp implements OfferService{
 	@Autowired
 	RatingRepository ratingRepository;
 	
+	
+	private offerExcelExporter offerExcel;
+	
 	private RatingService ratingService;
+	
+	  static final Logger LOGGER = 
+			    Logger.getLogger(OfferServiceImp.class.getName());
+	  
+	  
 	
 	Double totale ;
 	
@@ -121,6 +140,28 @@ public class OfferServiceImp implements OfferService{
         return myOffers;
 
 	}
+
+	@Override
+	public List<Offer> listAll() {
+		
+		
+	        return offerRepository.findAll(Sort.by("ratingAvg").descending());
+	    }
+	
+	
+	
+	
+	//@Scheduled(cron = "*/10 * * * * *")
+	  public void downloadOfferExcel() throws InterruptedException {
+	   
+		//load();
+		List<Offer> offers = offerRepository.findAll(Sort.by("ratingAvg").descending());
+
+	   // ByteArrayInputStream in = ExcelHelper.offerToExcel(offers);
+	    LOGGER.info("download offer xsl "+ 
+	      LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));  
+	  }
+	
 	
 
 	

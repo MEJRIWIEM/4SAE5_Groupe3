@@ -1,10 +1,11 @@
 package tn.esprit.spring.wecare.Entities.Collaborators;
 
 import java.io.Serializable;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Date;
 
-
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -14,6 +15,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -46,8 +49,9 @@ public class Advertising  implements Serializable{/**
 	private TypeAds typeAd ;
 	//@CreatedDate
 	private LocalDateTime dateCreated;
-
-	private LocalDateTime dateEnd;
+	@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+	private Timestamp  dateEnd;
+	@Column(columnDefinition = "integer default 0")
 	private Integer targetNbrViews;
 	private Integer finalNbrViews;
 	private Float cost;

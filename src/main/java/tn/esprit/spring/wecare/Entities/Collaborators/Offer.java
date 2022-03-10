@@ -26,6 +26,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 
 
@@ -34,6 +35,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Offer implements Serializable{/**
 	 * 
 	 */
@@ -59,7 +61,7 @@ public class Offer implements Serializable{/**
 	
 	private TypeOffer typeOffer ;
 	
-	private Float percent;
+	private Double percent;
 	@JsonIgnore
 	@OneToMany(mappedBy = "offer", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;

@@ -6,7 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 
@@ -46,7 +51,9 @@ public class AdsServiceImp implements AdsService{
 				 ads.setCollaborator(c);
 				 ads.setUser(user);
 				ads.setDateCreated(LocalDateTime.now());
-				ads.setDateEnd(LocalDateTime.now());
+				//ads.setDateEnd();
+				
+				
 			      adsRepository.save(ads);
 			 
 			 user.getAds().add(ads);
@@ -56,6 +63,29 @@ public class AdsServiceImp implements AdsService{
 		 
 		 return new ResponseEntity<String>("advertising was not created!",HttpStatus.BAD_REQUEST);
 	}
+	
+	//public void addTargetAdsView(HttpServletRequest request, Advertising ads, Long id){
+		
+		//Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		//HttpSession session = request.getSession(false);
+        //if (session != null) {
+           
+        //}
+		// String remoteIP = request.getRemoteAddr();
+		// if (remoteIP != null){
+			 //if(ads.getIdAd().equals(id))
+			// {
+		    //enter logic here to check if user with this IP has already viewed or not
+		//Advertising ad =  adsRepository.getById(id);
+		//  int totale= ad.getTargetNbrViews();
+		// ad.setTargetNbrViews(totale +1);   
+		 //adsRepository.save(ads);
+		
+		// }
+	 
+
+       // return new ResponseEntity<String>("advertising was not created!",HttpStatus.BAD_REQUEST);
+	//}
 
 
 	@Override
@@ -67,7 +97,7 @@ public class AdsServiceImp implements AdsService{
 				 a.setCost(ads.getCost());
 				 a.setTypeAd(ads.getTypeAd());
 				 a.setDateCreated(LocalDateTime.now());
-				 a.setDateEnd(LocalDateTime.now());
+				// a.setDateEnd(LocalDateTime.now());
 				 a.setName(ads.getName());
 				 a.setTargetNbrViews(ads.getTargetNbrViews());
 				 a.setFinalNbrViews(ads.getFinalNbrViews());
@@ -131,6 +161,7 @@ public class AdsServiceImp implements AdsService{
 		    	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
 		    }
 	}
+
 
 
 
