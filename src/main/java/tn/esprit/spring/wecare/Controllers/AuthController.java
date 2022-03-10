@@ -113,7 +113,7 @@ public final class AuthController {
 												 userDetails.getPhoto(),
 												 userDetails.getNumTel(),
 												 userDetails.getDepartement(),
-												 userDetails.getEmail(),
+												 userDetails.getEmail(),			 											
 												 roles));
 	}
 	

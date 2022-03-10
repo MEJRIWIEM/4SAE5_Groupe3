@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -25,9 +27,8 @@ import lombok.NonNull;
 import lombok.Setter;
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.User;
-import tn.esprit.spring.wecare.Entities.Collaborators.TypeCollaborator;
-import tn.esprit.spring.wecare.Entities.Forum.Comment;
-import tn.esprit.spring.wecare.Entities.Forum.Likes;
+import tn.esprit.spring.wecare.Entities.Rewards.CategorieB;
+
 
 
 @Entity
@@ -45,12 +46,10 @@ public class Badge implements Serializable {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	@NonNull
-	private String icon;
+	private String name;
 	private Long minPoints;
 	private Long maxPoints;
 	private Long n_votes;
-	private CategorieB categorie ;
 	private String fileURL;
 	// 0 or many badges can belong to a user
 	@ManyToMany(mappedBy = "badges")

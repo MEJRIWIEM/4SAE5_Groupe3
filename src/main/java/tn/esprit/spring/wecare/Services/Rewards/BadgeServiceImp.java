@@ -1,15 +1,24 @@
 package tn.esprit.spring.wecare.Services.Rewards;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -17,17 +26,32 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
+
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Entities.User;
-import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
 import tn.esprit.spring.wecare.Entities.Rewards.Badge;
 import tn.esprit.spring.wecare.Entities.Rewards.CategorieB;
-import tn.esprit.spring.wecare.Entities.Rewards.StringSimilarity;
 import tn.esprit.spring.wecare.Payloads.Responses.MessageResponse;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Rewards.BadgeRepository;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import java.nio.file.FileSystems;
+import java.nio.file.Path;
+
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.client.j2se.MatrixToImageWriter;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 
 
@@ -44,49 +68,43 @@ public class BadgeServiceImp implements BadgeService {
 	@Autowired
 	private FileStorageService storageService;
 	@Autowired
-    private JavaMailSender emailSender;
-	StringSimilarity stringSimilarity;
+    private JavaMailSender javaMailSender;
+
 	
+
 	@Override 
-	public ResponseEntity affecterBadgeUser(Long id, User user) {
+	@Transactional
+	public ResponseEntity affecterBadgeUser(Long id, User user,Long points) throws TwitterException, WriterException, IOException, MessagingException {
 		
 		
 		Badge badge= badgeRepository.findById(id).orElse(null);
-		
-			
-		user.getBadges().add(badge);
-					
-					userRepository.save(user);
-					badgeRepository.save(badge);
-					
-				
-			
-	
-		return new ResponseEntity("Badge affecte successfully!", HttpStatus.CREATED);
-		
-	/*	Badge badge = badgeRepository.findById(id).orElse(null);
-
-		       user.setBadges(badge); 
-			 
-				    badge.getUsers().add(user);
-				    //user.getBadges().add(badge);
-					badgeRepository.save(badge);
-					userRepository.save(user);
-					return new ResponseEntity("Badge affecte successfully!", HttpStatus.CREATED);
-			 
-		 
-		
-		/*if(user.getN_points()>=badge.getMinPoints() && user.getN_points()<=badge.getMaxPoints() )
+		if(points>=badge.getMinPoints())
 		{
-		}*/
-		
-		
-		
+			user.getBadges().add(badge);
+			badgeRepository.save(badge);
+			userRepository.save(user);
+			TwitterFactory tf = new TwitterFactory();
+	        Twitter twitter = tf.getInstance();
+	        twitter.updateStatus("NEW BADGE UNLOCKED!"+id);
+	        generateQRCodeImage("text",300,300,"./src/main/resources/QRCode"+id+user.getId()+".png");
+	        
+	        sendMailWithAttachment("hayfa.ouni@esprit.tn","new badge unlocked with a qr code ","here is your qr code ,to  enjoy it with our collaborators","C:/Users/PC-S9ZI/Desktop/github/4SAE5_Groupe3/src/main/resources/QRCode"+id+user.getId()+".png");
+	       
+
+		}
+		else{
+			TwitterFactory tf = new TwitterFactory();
+	        Twitter twitter = tf.getInstance();
+	        twitter.updateStatus(badge.getMinPoints()-points +"more points to unlock badge!"+id);
+			 return new ResponseEntity("badge was not unlocked, check points!",HttpStatus.CONFLICT);
+		}
+		return null;
+	
 		
 	}
 	
 	@Override 
-	public ResponseEntity addBadge(MultipartFile file, Badge badge ,User user) throws IOException{
+	public ResponseEntity addBadge(MultipartFile file, Badge badge ,User user) throws IOException, TwitterException{
 		// TODO Auto-generated method stub
 		String fileName = StringUtils.cleanPath(file.getOriginalFilename());
 		FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
@@ -94,7 +112,7 @@ public class BadgeServiceImp implements BadgeService {
 		
 		
 	
-		/* for(Badge b: badges){
+	  /*  for(Badge b: badges){
 			 if(stringSimilarity.similarity(b.getIcon(), badge.getIcon())>0.500 ){
 					return new ResponseEntity("A similar badge already exists! Try to enter a new name please.", HttpStatus.CREATED);
 					
@@ -106,12 +124,11 @@ public class BadgeServiceImp implements BadgeService {
 				badge.setFileDB(FileDB);
 
 			}
-		user.getBadges().add(badge);
+
 		badge.setFileURL(ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/").path(FileDB.getId())
 				.toUriString());
 		badgeRepository.save(badge);
 		fileDBRepository.save(FileDB);
-		emailSender.send(constructEmailRegestration("NEW BADGE UNLOCKED","CONGRATS , YOU UNLOCKED A NEW BADGE!","hayfa.ouni@esprit.tn"));
 		return new ResponseEntity("Badge created successfully!", HttpStatus.CREATED);
 		
 	}
@@ -179,10 +196,10 @@ public class BadgeServiceImp implements BadgeService {
 		for (Badge b : badges) {
 			if (b.getUsers().equals(user) && b.getId().equals(id)) {
 				fileDBRepository.delete(b.getFileDB());
+				b.setName(badge.getName());
 				b.setMinPoints(badge.getMinPoints());
 				b.setMaxPoints(badge.getMaxPoints());
 				b.setN_votes(badge.getN_votes());
-				b.setCategorie(badge.getCategorie());
 				b.setFileURL(ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/").path(FileDB.getId())
 						.toUriString());
 				b.setFileDB(badge.getFileDB());
@@ -191,23 +208,42 @@ public class BadgeServiceImp implements BadgeService {
 			}
 		}
 		return new ResponseEntity("Badge was not edited!", HttpStatus.CONFLICT);
+		
+		
 
-	}
-	private SimpleMailMessage constructEmailRegestration(String subject,String body,String  Address) {
-	    SimpleMailMessage email = new SimpleMailMessage();
-	    email.setSubject(subject);
-	    email.setText(body);
-	    email.setTo(Address);
-	    email.setFrom("noreply.wecare.tn@gmail.com");
-	    
-	    return email;
-	    
 	}
 	
 	
+	public  void generateQRCodeImage(String text, int width, int height, String filePath)
+            throws WriterException, IOException {
+        QRCodeWriter qrCodeWriter = new QRCodeWriter();
+        BitMatrix bitMatrix = qrCodeWriter.encode(text, BarcodeFormat.QR_CODE, width, height);
+
+        Path path = FileSystems.getDefault().getPath(filePath);
+        MatrixToImageWriter.writeToPath(bitMatrix, "PNG", path);
+       
+    }
 
 
+	 public void sendMailWithAttachment(String toEmail,
+             String body,
+             String subject,
+             String attachment) throws MessagingException {
+MimeMessage mimeMessage=javaMailSender.createMimeMessage();
+MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
+mimeMessageHelper.setFrom("noreply.wecare.tn@gmail.com");
+mimeMessageHelper.setTo(toEmail);
+mimeMessageHelper.setText(body);
+mimeMessageHelper.setSubject(subject);
 
+FileSystemResource fileSystemResource=
+new FileSystemResource(new File(attachment));
+mimeMessageHelper.addAttachment(fileSystemResource.getFilename(),
+fileSystemResource);
+javaMailSender.send(mimeMessage);
+System.out.printf("Mail with attachment sent successfully..");
+
+}
 
 	
 

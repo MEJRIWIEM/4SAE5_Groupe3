@@ -102,6 +102,7 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;
 	public User() {
+		
 	}
 	
 	@ManyToMany
@@ -216,10 +217,5 @@ public class User {
 	public void setNumTel(Long numTel) {
 		this.numTel = numTel;
 	}
-	public void setBadges(Badge b) {
-		this.badges= (Set<Badge>) b;
-		
-	}
-	
 
 }

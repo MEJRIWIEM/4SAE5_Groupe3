@@ -7,5 +7,5 @@ import tn.esprit.spring.wecare.Entities.Rewards.Badge;
 
 @Repository
 public interface BadgeRepository extends JpaRepository<Badge, Long> {
-
+	
 }

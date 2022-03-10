@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.mail.MessagingException;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.http.ResponseEntity;
@@ -22,15 +24,20 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.google.zxing.WriterException;
+
 import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Entities.Rewards.Badge;
+import tn.esprit.spring.wecare.Entities.Rewards.QRCodeGenerator;
 import tn.esprit.spring.wecare.Payloads.Responses.MessageResponse;
 import tn.esprit.spring.wecare.Repositories.SaveEmployeeToDb;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Services.Rewards.BadgeServiceImp;
+import tn.esprit.spring.wecare.Entities.Rewards.QRCodeGenerator;
+import twitter4j.TwitterException;
 
 @RestController
 public class BadgeController {
@@ -45,10 +52,13 @@ public class BadgeController {
 	@Autowired
     SaveEmployeeToDb employeeRepo;
 	
-	// add a post with a file
+	private static final String QR_CODE_IMAGE_PATH = "./src/main/resources/QRCode.png";
+	private static final QRCodeGenerator RCodeGenerator = null;
+	
+	// add a badge with a file
 	@PostMapping("/addBadge")
 	public ResponseEntity<Object> addBadgeUploadFile(@RequestPart(value = "file", required = false) MultipartFile file,
-			@RequestPart("badge") Badge badge) throws IOException {
+			@RequestPart("badge") Badge badge) throws IOException, TwitterException {
 		User us = getTheCurrentUser();
 		return BadgeService.addBadge(file, badge,us);
 
@@ -56,10 +66,12 @@ public class BadgeController {
 	}
 	
 	
-	@PostMapping("/affecterBadgeUser/{id}")
-	public void affecterBadgeUser(@PathVariable("id") Long id) {
+	 
+	@GetMapping("/affecterBadgeUser/{id}/{points}")
+	public void affecterBadgeUser(@PathVariable("id") Long id,@PathVariable("points") Long points) throws TwitterException, WriterException, IOException ,MessagingException{
 		User us = getTheCurrentUser();
-		BadgeService.affecterBadgeUser(id, us);
+		
+		BadgeService.affecterBadgeUser(id, us,points);
 		
 	}
 	// see the list of badges

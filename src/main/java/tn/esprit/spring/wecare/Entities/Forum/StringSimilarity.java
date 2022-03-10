@@ -1,5 +1,4 @@
-package tn.esprit.spring.wecare.Entities.Rewards;
-
+package tn.esprit.spring.wecare.Entities.Forum;
 
 public class StringSimilarity {
 	 
