@@ -1,6 +1,7 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -14,6 +15,7 @@ import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
+import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.OfferRepository;
@@ -29,7 +31,7 @@ public class OfferServiceImp implements OfferService{
 	@Override
 	@Transactional
 	public ResponseEntity addOffer( Offer offer, Long id) {
-		List<Collaborator> collaborators = collaboratorRepository.findAll();
+		List<Collaborator> collaborators =  collaboratorRepository.findAll();
 
 		 for(Collaborator c: collaborators){
 			 if(c.getIdCollaborator().equals(id))
@@ -64,7 +66,7 @@ public class OfferServiceImp implements OfferService{
 				 o.setPercent(offer.getPercent());
 				 //o.setTargetNbrViews(offer.getTargetNbrViews());
 				 //o.setFinalNbrViews(offer.getFinalNbrViews());
-				 
+				
 				 
 				 offerRepository.save(o);
 				 return new ResponseEntity<String>("offer edited successfully!",HttpStatus.OK);
@@ -94,5 +96,9 @@ public class OfferServiceImp implements OfferService{
 	public List<Offer> RetrieveOffer() {
 		return 	 offerRepository.findAll();
 	}
+
+	
+	
+	
 
 }

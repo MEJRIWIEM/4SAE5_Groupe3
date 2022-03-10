@@ -2,14 +2,21 @@ package tn.esprit.spring.wecare.Services.Collaborators;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
@@ -30,7 +37,7 @@ public class AdsServiceImp implements AdsService{
 	@Override
 	@Transactional
 	public ResponseEntity addAdvirtising(User user, Advertising ads, Long id) {
-		List<Collaborator> collaborators = collaboratorRepository.findAll();
+		List<Collaborator> collaborators = (List<Collaborator>) collaboratorRepository.findAll();
 
 		 for(Collaborator c: collaborators){
 			 if(c.getIdCollaborator().equals(id))
@@ -41,8 +48,6 @@ public class AdsServiceImp implements AdsService{
 				ads.setDateCreated(LocalDateTime.now());
 				ads.setDateEnd(LocalDateTime.now());
 			      adsRepository.save(ads);
-			
-			 
 			 
 			 user.getAds().add(ads);
 			 userRepository.save(user);
@@ -97,8 +102,45 @@ public class AdsServiceImp implements AdsService{
 	@Override
 	public List<Advertising> RetrieveAds() {
 		return 	 adsRepository.findAll();
+		
+		
+}
+
+
+	@Override
+	public ResponseEntity getAllAds(String name, int page, int size) {
+		try {
+		      List<Advertising> tutorials = new ArrayList<Advertising>();
+		      Pageable paging = PageRequest.of(page, size);
+		      
+		      Page<Advertising> pageTuts;
+		      if (name == null)
+		        pageTuts = adsRepository.findAll(paging);
+		      else
+		        pageTuts = adsRepository.findByNameContaining(name, paging);
+		      tutorials = pageTuts.getContent();
+		      Map<String, Object> response = new HashMap<>();
+		      
+		      response.put("ads", tutorials);
+		      response.put("currentPage", pageTuts.getNumber());
+		      response.put("totalItems", pageTuts.getTotalElements());
+		      response.put("totalPages", pageTuts.getTotalPages());
+		      return new ResponseEntity<>(response, HttpStatus.OK);
+		      
+		    } catch (Exception e) {
+		    	return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+		    }
 	}
-	}
+
+
+
+	
+
+
+
+
+
+}
 	
 	
 	

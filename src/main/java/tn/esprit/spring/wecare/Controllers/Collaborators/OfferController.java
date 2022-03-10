@@ -67,5 +67,7 @@ public class OfferController {
 	public List<Offer> RetrieveOffer() {
 		return 	offerService.RetrieveOffer();
 	}
-
+ 	
+ 	
+ 	
 }

@@ -1,6 +1,8 @@
 package tn.esprit.spring.wecare.Controllers.Collaborators;
 
+
 import java.util.List;
+
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
@@ -29,6 +32,11 @@ public class CollaboratorController {
 	UserRepository userRepository;
 	@Autowired
 	CollaboratorService collaboratorService;
+	
+	
+	
+	
+	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addCollaborator")
 	public  ResponseEntity<Object> addCollaborator(@RequestBody Collaborator collaborator) {
@@ -78,5 +86,13 @@ public class CollaboratorController {
 			User us= userRepository.findByUsername(username).orElse(null);	
 			 return collaboratorService.DeleteCollaborators(id, us);
 		}
+		
+
+
+				
+		
+		
+		
+		
 
 }
