@@ -9,8 +9,6 @@ import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 
 public interface CollaboratorService {
 	
-	
-//	public String sendMail(EmailRequestDto request, Map<String, String> model);
 	public ResponseEntity addCollaborator(Collaborator collaborator ,User user);
 	
 	public List<Collaborator> RetrieveCollaborators();

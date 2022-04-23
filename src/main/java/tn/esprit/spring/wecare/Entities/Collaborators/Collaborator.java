@@ -16,10 +16,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.Email;
 
-//import org.springframework.data.elasticsearch.annotations.Document;
-//import org.springframework.data.elasticsearch.annotations.Field;
-//import org.springframework.data.elasticsearch.annotations.FieldType;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
@@ -35,7 +31,6 @@ import tn.esprit.spring.wecare.Entities.User;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Document(indexName = "collaboratorindex")
 public class Collaborator  implements Serializable{
 	
 	/**
@@ -45,16 +40,13 @@ public class Collaborator  implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idCollaborator;
-	
-//	@Field(type = FieldType.Text, name = "name")
 	@NonNull
 	private String name;
 	
-	//@Field(type = FieldType.Text, name = "typeCollaborator")
 	@Enumerated(EnumType.STRING)
 	
 	private TypeCollaborator typeCollaborator ;
-	//@Field(type = FieldType.Text, name = "address")
+	
 	private String address;
 	@Email
 	private String email;
@@ -66,7 +58,6 @@ public class Collaborator  implements Serializable{
 	@OneToMany(mappedBy = "collaborator", cascade = CascadeType.ALL)
 	private Set<Offer> offers;
 	@JsonIgnore
-	//@Field(type = FieldType.Keyword, name = "Ads")
 	@OneToMany(mappedBy = "collaborator", cascade = CascadeType.ALL)
 	private Set<Advertising> Ads;
 	

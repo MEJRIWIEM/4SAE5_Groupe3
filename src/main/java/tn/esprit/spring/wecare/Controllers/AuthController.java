@@ -261,7 +261,7 @@ public final class AuthController {
 	    }
 	    String token = UUID.randomUUID().toString();
 	    createPasswordResetTokenForUser(user, token);
-	    emailSender.send(constructResetTokenEmail("http://localhost:8089/SpringMVC/api/auth/resetPassword",token, user));
+	    emailSender.send(constructResetTokenEmail("WeCare Password Reset","To reset your passord please copy the token below :"+"/n"+token, user));
 		return ResponseEntity.ok(new MessageResponse("token sent!"));
 
 	}

@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+
 import javax.validation.Valid;
 
 import org.springframework.batch.core.Job;
@@ -52,7 +53,7 @@ import tn.esprit.spring.wecare.Repositories.RoleRepository;
 import tn.esprit.spring.wecare.Repositories.SaveEmployeeToDb;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600)
 @RestController
 @RequestMapping("/api/userCrud")
 public class UserController {
@@ -80,13 +81,20 @@ public class UserController {
 	 Job job;
 
 	
-	    //Get Employees List
+	    //Get User List
 		@GetMapping("/admin/employees")
 		@PreAuthorize("hasRole('ADMIN')")
 		public List<User> listEmployees (){
 			return userRepository.findAll();
 		}
-		//Get Employee by id
+		//Get Employees List
+		@GetMapping("/admin/employeesList")
+		@PreAuthorize("hasRole('ADMIN')")
+		public List<EmployeeList> EmployeesTab (){
+			return employeeRepo.findAll();
+		}
+		
+		//Get User by id
 		@GetMapping("/admin/employeeById/{id}")
 		@PreAuthorize("hasRole('ADMIN')")
 		public User employeeById (@PathVariable("id") Long userId){
@@ -121,6 +129,28 @@ public class UserController {
 			
 		}
 		
+		//Update Role Account to Admin
+		@PutMapping("/RoleToAdmin/{id}")
+		@PreAuthorize("hasRole('ADMIN')")
+		@ResponseBody
+		public void editUserRoleA(@PathVariable("id") Long userId) {
+		User  u =userRepository.getById(userId);
+		Role adminRole = roleRepository.findByName(ERole.ROLE_ADMIN).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+		Set<Role> roles = new HashSet<>();
+		roles.add(adminRole);
+		u.setRoles(roles);}
+				
+		//Update Role Account to User
+		@PutMapping("/RoleToUser/{id}")
+		@PreAuthorize("hasRole('ADMIN')")
+		@ResponseBody
+		public void editUserRoleU(@PathVariable("id") Long userId) {
+		User  u =userRepository.getById(userId);
+		Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+		Set<Role> roles = new HashSet<>();
+		roles.add(userRole);
+		u.setRoles(roles);}
+				
 		//Delete user by id 
 		@DeleteMapping("/deleteUser/{id}")
 		@PreAuthorize("hasRole('ADMIN')")
@@ -129,9 +159,7 @@ public class UserController {
 		userRepository.deleteById(userId);
 		}
 
-	   //get user Details of the authorised user
-		
-		
+	    //get user Details of the authorised user
 		public User getConnectedUser() {
 			String username;
 			Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -147,7 +175,7 @@ public class UserController {
 			
 		}
 		
-	
+        //Spring Batch Employees List to DB
 		public void EmployeesList (String filePath)throws Exception{
 			JobParameters jobParameters = new JobParametersBuilder()
 	                .addString("date", UUID.randomUUID().toString())
@@ -159,7 +187,7 @@ public class UserController {
 			System.out.println("STATUS :: "+execution.getStatus());
 		}
 		
-		
+		//Add Employees list from csv
 		@PostMapping("/admin/employeesList")
 		@PreAuthorize("hasRole('ADMIN')")
 	    public void saveUser(@RequestParam("CSVfile") MultipartFile multipartFile) throws Exception  {
@@ -190,13 +218,15 @@ public class UserController {
 		    return email;
 		    
 		}
+		
+		
 
 
+        //Send RegistrationMAIL
+	    @PostMapping("/sendRegestrationMail")
+	    @PreAuthorize("hasRole('ADMIN')")
 
-	@PostMapping("/sendRegestrationMail")
-	@PreAuthorize("hasRole('ADMIN')")
-
-	public ResponseEntity<?> sendtoAll() {
+ 	    public ResponseEntity<?> sendtoAll() {
 		
 		List<String> address = new ArrayList<String>();
 		
@@ -227,7 +257,7 @@ public class UserController {
 				.body(new MessageResponse("Tous les employee ont deja un compte"));
     }else{
 		
-	    emailSender.send(constructEmailRegestration("Register Wecare","http://localhost:8089/SpringMVC/api/auth/signup",address));
+	    emailSender.send(constructEmailRegestration("Register Wecare","Welcome to our Team !!!"+"/n/n"+" Please visit thie link below to create an account :"+"/n"+"http://localhost:8089/SpringMVC/api/auth/signup",address));
 		return ResponseEntity.ok(new MessageResponse("email sent!"));
     }
 	}
