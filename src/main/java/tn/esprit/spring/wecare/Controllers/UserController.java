@@ -262,5 +262,18 @@ public class UserController {
     }
 	}
 
-
+	    //user upload profile photo
+	    @PostMapping("/user/photo")
+		@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	    public void profilePic(@RequestParam("file") MultipartFile file) throws IOException{
+	    	User u = getConnectedUser();
+	    	if(file!=null){
+				String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+			    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+		        fileDBRepository.save(FileDB);
+		        u.setFileDB(FileDB);
+		        userRepository.save(u);
+			}
+	    	
+	    }
 }
