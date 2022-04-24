@@ -4,23 +4,16 @@ import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.Setter;
-
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
-
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
-
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
-import tn.esprit.spring.wecare.Entities.Collaborators.TypeAds;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
-import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
-
-import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -49,7 +42,7 @@ public class User {
 	
 	private String firstname;
 	private String lastname;
-	private String photo;
+	
 	@OneToOne(cascade= CascadeType.ALL)
 	private FileDB fileDB;
 	
@@ -69,32 +62,33 @@ public class User {
 				inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
 	
+	@JsonIgnore
 	//A user can post 0 or many posts
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Post> posts= new HashSet<>();
 	
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Comment> comments;
 	
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Notification> notifications;
 
 	
 	//relation with collaborator 
-	
+	@JsonIgnore
 	@OneToMany(cascade = CascadeType.ALL, mappedBy="user")
 	private Set<Collaborator> collaborators= new HashSet<>();
 	
 	//relation with ads 
 	
 	
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Advertising> ads;
 	
-	
+	@JsonIgnore
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Rating> ratings;
 	public User() {
@@ -112,14 +106,14 @@ public class User {
 	
 
 	public User(String username, String email,
-			String firstname, String lastname, String photo,FileDB fileDB, Long numTel, Departement departement,
+			String firstname, String lastname,  Long numTel, Departement departement,
 			String password) {
 		this.username = username;
 		this.email = email;
 		this.firstname = firstname;
 		this.lastname = lastname;
-		this.photo = photo;
-		this.fileDB=fileDB;
+		
+		
 		this.numTel = numTel;
 		this.departement = departement;
 		this.password = password;
@@ -203,13 +197,7 @@ public class User {
 		this.lastname = lastname;
 	}
 
-	public String getPhoto() {
-		return photo;
-	}
 
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
 
 	public Long getNumTel() {
 		return numTel;
