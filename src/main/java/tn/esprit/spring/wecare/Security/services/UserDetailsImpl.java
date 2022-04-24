@@ -33,7 +33,7 @@ public class UserDetailsImpl implements UserDetails {
 	
 	private String lastname;
 	
-	private String photo;
+	
 	
 	private Long numTel;
 	
@@ -46,14 +46,13 @@ public class UserDetailsImpl implements UserDetails {
 	private Collection<? extends GrantedAuthority> authorities;
 
 	public UserDetailsImpl(Long id, String username, String email, String password,String firstname,
-			String lastname,String photo,Long numTel,Departement departement,Collection<? extends GrantedAuthority> authorities) {
+			String lastname,Long numTel,Departement departement,Collection<? extends GrantedAuthority> authorities) {
 		this.id = id;
 		this.username = username;
 		this.email = email;
 		this.password = password;
 		this.firstname=firstname;
 		this.lastname=lastname;
-		this.photo=photo;
 		this.numTel=numTel;
 		this.departement=departement;
 		this.authorities = authorities;
@@ -72,7 +71,6 @@ public class UserDetailsImpl implements UserDetails {
 				user.getPassword(),
 				user.getFirstname(),
 				user.getLastname(),
-				user.getPhoto(),
 				user.getNumTel(),
 				user.getDepartement(),
 				authorities);
@@ -166,17 +164,6 @@ public class UserDetailsImpl implements UserDetails {
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
 	}
-
-
-	public String getPhoto() {
-		return photo;
-	}
-
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
 
 	public Long getNumTel() {
 		return numTel;

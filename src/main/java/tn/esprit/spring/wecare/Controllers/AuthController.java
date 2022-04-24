@@ -27,18 +27,18 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.util.StringUtils;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
-import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+import org.springframework.web.bind.annotation.RestController;
+
+
+
 import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.ERole;
 import tn.esprit.spring.wecare.Entities.PasswordResetToken;
@@ -119,7 +119,6 @@ public final class AuthController {
 												 userDetails.getUsername(), 
 												 userDetails.getFirstname(),
 												 userDetails.getLastname(),
-												 userDetails.getPhoto(),
 												 userDetails.getNumTel(),
 												 userDetails.getDepartement(),
 												 userDetails.getEmail(),			 											
@@ -144,7 +143,7 @@ public final class AuthController {
 	
 
 	@PostMapping("/signup")
-	public ResponseEntity<?> registerUser(@Valid @RequestPart("user") SignupRequest signUpRequest, @RequestPart(value="file",required=false) MultipartFile file)throws IOException {
+	public ResponseEntity<?> registerUser(@Valid @RequestBody SignupRequest signUpRequest)throws IOException {
 		if (userRepository.existsByUsername(signUpRequest.getUsername())) {
 			return ResponseEntity
 					.badRequest()
@@ -176,8 +175,6 @@ public final class AuthController {
 							 signUpRequest.getEmail(),
 							 signUpRequest.getFirstname(),
 							 signUpRequest.getLastname(),
-							 signUpRequest.getPhoto(),
-							 signUpRequest.getFileDB(),
 							 signUpRequest.getNumTel(),
 							 signUpRequest.getDepartement(),
 							 encoder.encode(signUpRequest.getPassword()));
@@ -209,13 +206,6 @@ public final class AuthController {
 			});
 		}
 		
-		if(file!=null){
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-		    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
-	        fileDBRepository.save(FileDB);
-	        user.setFileDB(FileDB);
-		}
-
 		user.setRoles(roles);
 		userRepository.save(user);
 
