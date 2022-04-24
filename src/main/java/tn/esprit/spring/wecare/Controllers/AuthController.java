@@ -33,7 +33,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import org.springframework.web.bind.annotation.RestController;
 
@@ -46,6 +45,7 @@ import tn.esprit.spring.wecare.Entities.RefreshToken;
 import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
+import tn.esprit.spring.wecare.Payloads.Requests.ForgetPassword;
 import tn.esprit.spring.wecare.Payloads.Requests.LoginRequest;
 import tn.esprit.spring.wecare.Payloads.Requests.PasswordReset;
 import tn.esprit.spring.wecare.Payloads.Requests.SignupRequest;
@@ -244,7 +244,8 @@ public final class AuthController {
 	//password reset
 	
 	@PostMapping("/forgetPassword")
-	public ResponseEntity<?> resetPassword(@RequestParam("email") String userEmail) {
+	public ResponseEntity<?> resetPassword(@Valid @RequestBody ForgetPassword forgetPassword) {
+		String userEmail =forgetPassword.getEmail();
 		User user = userRepository.findByEmail(userEmail);
 		if (user == null) {
 	        throw new UsernameNotFoundException("Email not found");
