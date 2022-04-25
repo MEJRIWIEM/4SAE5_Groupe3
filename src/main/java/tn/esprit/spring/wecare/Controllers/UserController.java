@@ -97,7 +97,7 @@ public class UserController {
 		
 		//Get User by id
 		@GetMapping("/admin/employeeById/{id}")
-		@PreAuthorize("hasRole('ADMIN')")
+		@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 		public User employeeById (@PathVariable("id") Long userId){
 			return userRepository.findById(userId).orElse(null);
 		}
@@ -222,8 +222,6 @@ public class UserController {
 		    
 		}
 		
-		
-
 
         //Send RegistrationMAIL
 	    @PostMapping("/sendRegestrationMail")
