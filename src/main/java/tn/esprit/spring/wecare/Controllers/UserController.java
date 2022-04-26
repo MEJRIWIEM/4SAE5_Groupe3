@@ -34,10 +34,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
+
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +49,7 @@ import tn.esprit.spring.wecare.Entities.ERole;
 import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
+
 import tn.esprit.spring.wecare.Payloads.Responses.MessageResponse;
 import tn.esprit.spring.wecare.Repositories.RoleRepository;
 import tn.esprit.spring.wecare.Repositories.SaveEmployeeToDb;
@@ -104,26 +105,12 @@ public class UserController {
 		
 		//Update user Account 
 		@PutMapping("/userEdit")
-		@PreAuthorize("hasRole('USER')")
+		@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 		@ResponseBody
-		public User editMyAccount(@Valid @RequestPart("user") User u, @RequestPart(value="file",required=false) MultipartFile file) throws IOException{
+		public User editMyAccount(@Valid @RequestBody User u ) throws IOException{
 			String x = encoder.encode(u.getPassword());
-			Role userRole = roleRepository.findByName(ERole.ROLE_USER).orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
-			FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
             User us = getConnectedUser();
-			
-			if (file != null) {
-				fileDBRepository.save(FileDB);
-				u.setFileDB(FileDB);
-			}
-			
-			
-			
-			Set<Role> roles = new HashSet<>();
-			roles.add(userRole);
 			u.setId(us.getId());
-			u.setRoles(roles);
 			u.setPassword(x);
 			return userRepository.save(u);
 			
