@@ -107,13 +107,28 @@ public class UserController {
 		@PutMapping("/userEdit")
 		@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 		@ResponseBody
-		public User editMyAccount(@Valid @RequestBody User u ) throws IOException{
+		public ResponseEntity<?> editMyAccount(@Valid @RequestBody User u ) throws IOException{
 			String x = encoder.encode(u.getPassword());
             User us = getConnectedUser();
+            System.out.println(x);
+            System.out.println(us.getPassword());
+            boolean verif = encoder.matches(u.getPassword(), us.getPassword());
+
+           if (verif==false){
+            	return ResponseEntity
+    					.badRequest()
+    					.body(new MessageResponse("Wrong Password"));
+            }
+            else{
+            
+            u.setRoles(us.getRoles());
+            u.setFileDB(us.getFileDB());
 			u.setId(us.getId());
 			u.setPassword(x);
-			return userRepository.save(u);
-			
+			userRepository.save(u);
+			return ResponseEntity.ok(new MessageResponse("User Profile changed successfully!"));
+ 
+            }
 			
 		}
 		
@@ -211,7 +226,7 @@ public class UserController {
 		
 
         //Send RegistrationMAIL
-	    @PostMapping("/sendRegestrationMail")
+	    @GetMapping("/sendRegistrationMail")
 	    @PreAuthorize("hasRole('ADMIN')")
 
  	    public ResponseEntity<?> sendtoAll() {
@@ -245,7 +260,7 @@ public class UserController {
 				.body(new MessageResponse("Tous les employee ont deja un compte"));
     }else{
 		
-	    emailSender.send(constructEmailRegestration("Register Wecare","Welcome to our Team !!!"+"/n/n"+" Please visit thie link below to create an account :"+"/n"+"http://localhost:8089/SpringMVC/api/auth/signup",address));
+	    emailSender.send(constructEmailRegestration("Register Wecare","Welcome to our Team !!!"+"\n\n"+"Please visit this link below to create an account :"+"\n\n"+"www.wecare.com/signup",address));
 		return ResponseEntity.ok(new MessageResponse("email sent!"));
     }
 	}

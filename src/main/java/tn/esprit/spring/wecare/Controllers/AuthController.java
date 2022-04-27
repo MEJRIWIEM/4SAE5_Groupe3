@@ -224,7 +224,7 @@ public final class AuthController {
 	//Send mail
 	private SimpleMailMessage constructResetTokenEmail(
 			  String contextPath, String token, User user) {
-			    String url = contextPath + "/user/changePassword?token=" + token;
+			    String url = contextPath+ token;
 			    //String message = messages.getMessage("message.resetPassword", null, locale);
 			    return constructEmail("Reset Password", url, user);
 			}
@@ -252,7 +252,7 @@ public final class AuthController {
 	    }
 	    String token = UUID.randomUUID().toString();
 	    createPasswordResetTokenForUser(user, token);
-	    emailSender.send(constructResetTokenEmail("WeCare Password Reset","To reset your passord please copy the token below :"+"/n"+token, user));
+	    emailSender.send(constructResetTokenEmail("WeCare Password Reset","To reset your passord please copy the token below :       "+token, user));
 		return ResponseEntity.ok(new MessageResponse("token sent!"));
 
 	}
