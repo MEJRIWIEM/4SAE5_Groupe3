@@ -15,7 +15,6 @@ import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Entities.Collaborators.TypeAds;
-import tn.esprit.spring.wecare.Entities.Event.Event;
 import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Notification;
@@ -83,8 +82,8 @@ public class User {
 	private Set<Notification> notifications;
 
 
-	@ManyToMany(cascade= CascadeType.ALL, mappedBy="participants")
-	private Set<Event> events_participations;
+	/*@ManyToMany(cascade= CascadeType.ALL, mappedBy="participants")
+	private Set<Event> events_participations;*/
 	
 	
 	

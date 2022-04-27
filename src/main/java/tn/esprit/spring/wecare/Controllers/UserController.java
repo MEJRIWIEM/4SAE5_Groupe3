@@ -46,7 +46,7 @@ import tn.esprit.spring.wecare.Repositories.RoleRepository;
 import tn.esprit.spring.wecare.Repositories.SaveEmployeeToDb;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 
-@CrossOrigin(origins = "*", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:8081")
 @RestController
 @RequestMapping("/api/userCrud")
 public class UserController {
