@@ -1,9 +1,20 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
 
+
+import java.io.File;
+import java.util.List;
+
+import javax.mail.MessagingException;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -68,6 +79,31 @@ public class CollaboratorServiceImp implements CollaboratorService{
 		 }
 		 return new ResponseEntity("Collaborator was not deleted!",HttpStatus.CONFLICT);
 	}
+
+
+
+
+
+
+
+	@Override
+	public void MailWithAttachment() {
+		
+		
+	}
+
+
+	@Override
+	public Collaborator RetrieveCollaborator(Long id) {
+		return collaboratorRepo.findById(id).orElse(null);
+	}
+
+
+	
+
+	
+	
+	
 
 
 

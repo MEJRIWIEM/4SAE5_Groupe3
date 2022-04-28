@@ -2,11 +2,18 @@ package tn.esprit.spring.wecare.Controllers.Collaborators;
 
 import java.util.List;
 
+
+import javax.annotation.Resource;
+import javax.mail.MessagingException;
+import javax.servlet.http.HttpServletResponse;
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,6 +33,7 @@ import tn.esprit.spring.wecare.Services.Collaborators.OfferService;
 
 @RestController
 @RequestMapping("/api/offer")
+@CrossOrigin(origins = "http://localhost:8081")
 public class OfferController {
 	
 	
@@ -67,5 +75,36 @@ public class OfferController {
 	public List<Offer> RetrieveOffer() {
 		return 	offerService.RetrieveOffer();
 	}
+
+ 	
+ 	@GetMapping("/getOffersWithCollabortorId/{id}")
+	public List<Offer> getOffersWithCollabortorId(@PathVariable("id") Long id) {
+		return offerService.getOffersWithCollabortorId(id);
+	}
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	
+ 	@GetMapping("/export/excel")
+	public void exportToExcel(HttpServletResponse response) throws IOException, MessagingException {
+		response.setContentType("application/octet-stream");
+		String headerKey = "Content-Disposition";
+		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
+        String currentDateTime = dateFormatter.format(new Date()).toString();
+		String filepath = "C:\\Users\\zidra\\4SAE5_Groupe3\\src\\main\\resources\\";
+		
+		String headervalue = "attachment; filename=ListOffersByRating.xlsx";
+		String paths=filepath + headervalue;
+
+		response.setHeader(headerKey, paths);
+		List<Offer> listOffers = offerService.listAll();
+		offerExcelExporter exp = new offerExcelExporter(listOffers);
+		exp.export(response);
+		offerService.sendExcel();
+	}
+ 	
+ 	
 
 }
