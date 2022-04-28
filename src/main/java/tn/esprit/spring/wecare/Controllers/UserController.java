@@ -2,7 +2,12 @@ package tn.esprit.spring.wecare.Controllers;
 
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +17,9 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -21,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import tn.esprit.spring.wecare.Configuration.FileUploadUtil;
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
@@ -280,8 +290,38 @@ public class UserController {
 	    	
 	    }
 	    
-	   
-	    
+	  
+	    @PostMapping("/defaultimg")
+	    @PreAuthorize("hasRole('ADMIN')")
+
+ 	    public void defaultPhoto(User u) throws IOException{
+
+	    	File file = new File("src/main/resources/user.png");
+	    	FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+
+	    	try {
+	    	    InputStream input = new FileInputStream(file);
+	    	    OutputStream os = fileItem.getOutputStream();
+	    	    IOUtils.copy(input, os);
+	    	    // Or faster..
+	    	    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+	    	} catch (IOException ex) {
+	    	    // do something.
+	    	}
+
+	    	MultipartFile result = new CommonsMultipartFile(fileItem);
+	    	
+	    	
+	    	
+	    	if(result!=null){
+				String fileName = StringUtils.cleanPath(result.getOriginalFilename());
+			    FileDB FileDB = new FileDB(fileName, result.getContentType(), result.getBytes());
+		        fileDBRepository.save(FileDB);
+		        u.setFileDB(FileDB);
+		        userRepository.save(u);
+			}
+	    	
+	    }
 	    
 	    
 }
