@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
+import tn.esprit.spring.wecare.Entities.Forum.Post;
 
 @Repository
 public interface CollaboratorRepository extends  JpaRepository<Collaborator,Long> {
@@ -16,6 +17,5 @@ public interface CollaboratorRepository extends  JpaRepository<Collaborator,Long
 	  
 	 List<Collaborator> findByNameContaining(String name);
 	 
-	 // List<Collaborator> findByManufacturerAndCategory
-	      // (String offers, String category);
+	
 }

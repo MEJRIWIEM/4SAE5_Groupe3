@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,7 +32,9 @@ import tn.esprit.spring.wecare.Services.Collaborators.AdsService;
 import tn.esprit.spring.wecare.Services.Collaborators.CollaboratorService;
 
 @RestController
-@RequestMapping("/api/ads")
+@RequestMapping("/api/advert")
+@CrossOrigin(origins ="http://localhost:8081")
+
 public class AdsController {
 	@Autowired
 	UserRepository userRepository;
@@ -43,7 +46,7 @@ public class AdsController {
 	AdsService adsService;
 	
 	@PreAuthorize("hasRole('ADMIN')")
-	@PostMapping("/addAds/{id}")
+	@PostMapping("/addAdvert/{id}")
 	public ResponseEntity<?>  addAdvirtising(@RequestBody Advertising ads, @PathVariable("id") Long id){
 		String username;
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

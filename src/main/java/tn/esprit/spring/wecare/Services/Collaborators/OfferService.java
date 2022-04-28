@@ -1,14 +1,12 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
-import java.io.ByteArrayInputStream;
 import java.util.List;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
+import javax.mail.MessagingException;
 
 import org.springframework.http.ResponseEntity;
+
 import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
-import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 
 public interface OfferService {
 	public  ResponseEntity addOffer( Offer offer, Long id);
@@ -20,5 +18,8 @@ public interface OfferService {
 	
 	public List<Offer> listAll() ;
 	
+	public void sendExcel() throws MessagingException;
+	
+
 	
 }

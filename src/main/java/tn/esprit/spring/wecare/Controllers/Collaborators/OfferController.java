@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.annotation.Resource;
+import javax.mail.MessagingException;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,6 +42,7 @@ import tn.esprit.spring.wecare.helper.offerExcelExporter;
 
 @RestController
 @RequestMapping("/api/offer")
+@CrossOrigin(origins = "http://localhost:8081")
 public class OfferController {
 	
 	
@@ -93,7 +96,7 @@ public class OfferController {
  	
  	
  	@GetMapping("/export/excel")
-	public void exportToExcel(HttpServletResponse response) throws IOException {
+	public void exportToExcel(HttpServletResponse response) throws IOException, MessagingException {
 		response.setContentType("application/octet-stream");
 		String headerKey = "Content-Disposition";
 		DateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH:mm:ss");
@@ -107,7 +110,7 @@ public class OfferController {
 		List<Offer> listOffers = offerService.listAll();
 		offerExcelExporter exp = new offerExcelExporter(listOffers);
 		exp.export(response);
-
+		offerService.sendExcel();
 	}
  	
  	
