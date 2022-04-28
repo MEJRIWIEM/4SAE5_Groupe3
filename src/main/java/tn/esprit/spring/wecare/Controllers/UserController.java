@@ -2,7 +2,12 @@ package tn.esprit.spring.wecare.Controllers;
 
 
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -12,6 +17,9 @@ import java.util.UUID;
 
 import javax.validation.Valid;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobParameters;
@@ -21,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.util.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,6 +50,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import tn.esprit.spring.wecare.Configuration.FileUploadUtil;
 import tn.esprit.spring.wecare.Configuration.Files.FileDB;
@@ -107,13 +117,28 @@ public class UserController {
 		@PutMapping("/userEdit")
 		@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 		@ResponseBody
-		public User editMyAccount(@Valid @RequestBody User u ) throws IOException{
+		public ResponseEntity<?> editMyAccount(@Valid @RequestBody User u ) throws IOException{
 			String x = encoder.encode(u.getPassword());
             User us = getConnectedUser();
+            System.out.println(x);
+            System.out.println(us.getPassword());
+            boolean verif = encoder.matches(u.getPassword(), us.getPassword());
+
+           if (verif==false){
+            	return ResponseEntity
+    					.badRequest()
+    					.body(new MessageResponse("Wrong Password"));
+            }
+            else{
+            
+            u.setRoles(us.getRoles());
+            u.setFileDB(us.getFileDB());
 			u.setId(us.getId());
 			u.setPassword(x);
-			return userRepository.save(u);
-			
+			userRepository.save(u);
+			return ResponseEntity.ok(new MessageResponse("User Profile changed successfully!"));
+ 
+            }
 			
 		}
 		
@@ -211,7 +236,7 @@ public class UserController {
 		
 
         //Send RegistrationMAIL
-	    @PostMapping("/sendRegestrationMail")
+	    @GetMapping("/sendRegistrationMail")
 	    @PreAuthorize("hasRole('ADMIN')")
 
  	    public ResponseEntity<?> sendtoAll() {
@@ -245,7 +270,7 @@ public class UserController {
 				.body(new MessageResponse("Tous les employee ont deja un compte"));
     }else{
 		
-	    emailSender.send(constructEmailRegestration("Register Wecare","Welcome to our Team !!!"+"/n/n"+" Please visit thie link below to create an account :"+"/n"+"http://localhost:8089/SpringMVC/api/auth/signup",address));
+	    emailSender.send(constructEmailRegestration("Register Wecare","Welcome to our Team !!!"+"\n\n"+"Please visit this link below to create an account :"+"\n\n"+"www.wecare.com/signup",address));
 		return ResponseEntity.ok(new MessageResponse("email sent!"));
     }
 	}
@@ -265,8 +290,38 @@ public class UserController {
 	    	
 	    }
 	    
-	   
-	    
+	  
+	    @PostMapping("/defaultimg")
+	    @PreAuthorize("hasRole('ADMIN')")
+
+ 	    public void defaultPhoto(User u) throws IOException{
+
+	    	File file = new File("src/main/resources/user.png");
+	    	FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+
+	    	try {
+	    	    InputStream input = new FileInputStream(file);
+	    	    OutputStream os = fileItem.getOutputStream();
+	    	    IOUtils.copy(input, os);
+	    	    // Or faster..
+	    	    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+	    	} catch (IOException ex) {
+	    	    // do something.
+	    	}
+
+	    	MultipartFile result = new CommonsMultipartFile(fileItem);
+	    	
+	    	
+	    	
+	    	if(result!=null){
+				String fileName = StringUtils.cleanPath(result.getOriginalFilename());
+			    FileDB FileDB = new FileDB(fileName, result.getContentType(), result.getBytes());
+		        fileDBRepository.save(FileDB);
+		        u.setFileDB(FileDB);
+		        userRepository.save(u);
+			}
+	    	
+	    }
 	    
 	    
 }

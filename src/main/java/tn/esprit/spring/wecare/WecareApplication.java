@@ -10,8 +10,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import java.util.Arrays;
 
-@SpringBootApplication
 @EnableBatchProcessing
+@SpringBootApplication
+
 public class WecareApplication {
 
 	public static void main(String[] args) {

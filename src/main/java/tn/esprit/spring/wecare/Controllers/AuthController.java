@@ -1,12 +1,17 @@
 package tn.esprit.spring.wecare.Controllers;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
@@ -17,6 +22,9 @@ import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.disk.DiskFileItem;
+import org.apache.commons.io.IOUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -27,7 +35,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,9 +43,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
-
-
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
 import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
 import tn.esprit.spring.wecare.Entities.ERole;
 import tn.esprit.spring.wecare.Entities.PasswordResetToken;
@@ -206,6 +215,33 @@ public final class AuthController {
 			});
 		}
 		
+		
+		File file = new File("src/main/resources/user.png");
+    	FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+
+    	try {
+    	    InputStream input = new FileInputStream(file);
+    	    OutputStream os = fileItem.getOutputStream();
+    	    IOUtils.copy(input, os);
+    	    // Or faster..
+    	    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+    	} catch (IOException ex) {
+    	    // do something.
+    	}
+
+    	MultipartFile result = new CommonsMultipartFile(fileItem);
+    	
+    	
+    	
+    	if(result!=null){
+			String fileName = StringUtils.cleanPath(result.getOriginalFilename());
+		    FileDB FileDB = new FileDB(fileName, result.getContentType(), result.getBytes());
+	        fileDBRepository.save(FileDB);
+	        user.setFileDB(FileDB);
+	        
+		}
+		
+		
 		user.setRoles(roles);
 		userRepository.save(user);
 
@@ -224,7 +260,7 @@ public final class AuthController {
 	//Send mail
 	private SimpleMailMessage constructResetTokenEmail(
 			  String contextPath, String token, User user) {
-			    String url = contextPath + "/user/changePassword?token=" + token;
+			    String url = contextPath+ token;
 			    //String message = messages.getMessage("message.resetPassword", null, locale);
 			    return constructEmail("Reset Password", url, user);
 			}
@@ -252,7 +288,7 @@ public final class AuthController {
 	    }
 	    String token = UUID.randomUUID().toString();
 	    createPasswordResetTokenForUser(user, token);
-	    emailSender.send(constructResetTokenEmail("WeCare Password Reset","To reset your passord please copy the token below :"+"/n"+token, user));
+	    emailSender.send(constructResetTokenEmail("WeCare Password Reset","To reset your passord please copy the token below :       "+token, user));
 		return ResponseEntity.ok(new MessageResponse("token sent!"));
 
 	}
