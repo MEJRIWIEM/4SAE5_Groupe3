@@ -50,7 +50,6 @@ public class PostServiceImp implements PostService {
 	@Override
 	public List<Post> RetrievePostsWithFile() {
 		List<Post> posts = postRepository.findAll();
-	
 		return posts;
 	}
 
@@ -146,6 +145,14 @@ public class PostServiceImp implements PostService {
 		return new ResponseEntity("Post created successfully!", HttpStatus.CREATED);
 	}
 
+
+	public ResponseEntity<Object> addPost(Post post, User us) {
+		List<Post> posts = postRepository.findAll();
+		
+	
+		
+		post.setUser(us);
+
 	@Override
 	public ResponseEntity addPost(Post post, User user) {
 		List<Post> posts = postRepository.findAll();
@@ -167,6 +174,21 @@ public class PostServiceImp implements PostService {
 		postRepository.save(post);
 		return new ResponseEntity("Post created successfully!", HttpStatus.CREATED);
 	}
+
+	public ResponseEntity<Object> Edit( User us, Post post) {
+		Post post2 = postRepository.findById(post.getIdPost()).orElse(null);
+		System.out.println("id*********"+ post2.getUser().getId());
+		if(post2.getUser().getId().equals(us.getId()))
+		{
+		post.setUser(us);
+		post.setTimestamp(LocalDateTime.now());
+
+		postRepository.save(post);
+				return new ResponseEntity("Post edited successfully!", HttpStatus.OK);
+		}
+		return new ResponseEntity("Error!", HttpStatus.CONFLICT);
+
+			
 
 	@Override
 	public ResponseEntity EditPost(Long id, User user, Post post) throws IOException {

@@ -47,7 +47,7 @@ import java.awt.*;
 
 import java.net.URISyntaxException;
 import java.net.URL;
-
+@CrossOrigin(origins = "http://localhost:8081", maxAge = 3600)
 @RestController
 @RequestMapping("/api/forumCrud")
 @CrossOrigin(origins = "http://localhost:8080")
@@ -81,12 +81,26 @@ public class ForumController {
 		return PostService.EditPost( id, us, post);
 	}
 
+	@PostMapping
+	public ResponseEntity<Object> addPostUploadFile(
+			@RequestBody Post post)  {
+		User us = getTheCurrentUser();
+		return PostService.addPost( post, us);
+
+	}
 	// edit his post
 	@PutMapping("/EditPost/{id}")
 	public ResponseEntity<Object> EditPost(@RequestPart(value = "file", required = false) MultipartFile file,
 			@PathVariable("id") Long id, @RequestPart("post") Post post) throws IOException {
 		User us = getTheCurrentUser();
 		return PostService.EditPost(file, id, us, post);
+	}
+	@PutMapping("/update")
+	public ResponseEntity<Object> EditPost(
+			 @RequestBody Post post) throws IOException {
+		User us = getTheCurrentUser();
+		System.out.println("je suis executé*************");
+		return PostService.Edit( us, post);
 	}
 
 	// see the list of posts
