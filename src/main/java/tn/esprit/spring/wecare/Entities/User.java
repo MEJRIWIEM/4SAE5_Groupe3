@@ -75,6 +75,11 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
 	private Set<Notification> notifications;
 
+
+	/*@ManyToMany(cascade= CascadeType.ALL, mappedBy="participants")
+	private Set<Event> events_participations;*/
+	
+	
 	
 	//relation with collaborator 
 	@JsonIgnore
