@@ -1,6 +1,5 @@
 package tn.esprit.spring.wecare.Controllers.Collaborators;
 
-
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,20 +33,6 @@ public class CollaboratorController {
 	UserRepository userRepository;
 	@Autowired
 	CollaboratorService collaboratorService;
-	
-	
-	
-	
-	
-   // @PostMapping("send-mail")
-   // public ResponseEntity<String> sendMail(@RequestBody EmailRequestDto emailRequest) {
-   //     Map<String, String> model = new HashMap<>();
-   //     model.put("name", emailRequest.getName());
-    //    model.put("value", "Welcome to ASB Notebook!!");
-    //    String response = collaboratorService.sendMail(emailRequest, model);
-     //   return new ResponseEntity<>(response, HttpStatus.OK);
-   // }
-	
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addCollaborator")
 	public  ResponseEntity<Object> addCollaborator(@RequestBody Collaborator collaborator) {
@@ -97,6 +82,7 @@ public class CollaboratorController {
 			User us= userRepository.findByUsername(username).orElse(null);	
 			 return collaboratorService.DeleteCollaborators(id, us);
 		}
+
 		
 		// see a specific post with his id
 		@GetMapping("/RetriveCollaborator/{id}")
@@ -110,6 +96,6 @@ public class CollaboratorController {
 		
 		
 		
-		
+
 
 }

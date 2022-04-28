@@ -1,20 +1,19 @@
 package tn.esprit.spring.wecare.Configuration.Files;
 
-import javax.persistence.CascadeType;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
+
 import javax.persistence.Lob;
-import javax.persistence.OneToOne;
+
 import javax.persistence.Table;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Getter;
 import lombok.Setter;
-import tn.esprit.spring.wecare.Entities.Forum.Post;
+
 
 @Entity
 @Table(name = "files")

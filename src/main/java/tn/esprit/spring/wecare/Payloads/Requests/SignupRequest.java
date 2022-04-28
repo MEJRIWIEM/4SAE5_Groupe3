@@ -3,7 +3,7 @@ import java.util.Set;
 
 import javax.validation.constraints.*;
 
-import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+
 import tn.esprit.spring.wecare.Entities.Departement;
 
 public class SignupRequest {
@@ -18,8 +18,8 @@ public class SignupRequest {
 	  
 	 private String firstname;
 	 private String lastname;
-	 private String photo;
-	 private FileDB fileDB;
+	
+	
 	 private Long numTel;
 	 private Departement departement;
 		
@@ -79,14 +79,7 @@ public class SignupRequest {
 		this.lastname = lastname;
 	}
 
-	public String getPhoto() {
-		return photo;
-	}
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
-
+	
 	public Long getNumTel() {
 		return numTel;
 	}
@@ -103,12 +96,5 @@ public class SignupRequest {
 		this.departement = departement;
 	}
 
-	public FileDB getFileDB() {
-		return fileDB;
-	}
-
-	public void setFileDB(FileDB fileDB) {
-		this.fileDB = fileDB;
-	}
 
 }

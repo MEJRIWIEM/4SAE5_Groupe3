@@ -16,7 +16,7 @@ public class JwtResponse {
 	  private String username;
 	  private String firstname;
 	  private String lastname;
-		private String photo;
+		
 		private Long numTel;
 		
 		@Enumerated(EnumType.STRING)
@@ -24,7 +24,7 @@ public class JwtResponse {
 	  private String email;
 	  private List<String> roles;
 	  
-	  public JwtResponse(String accessToken, String refreshToken,Long id, String username, String firstname,String lastname, String photo, Long numTel, Departement departement,String email, List<String> roles) {
+	  public JwtResponse(String accessToken, String refreshToken,Long id, String username, String firstname,String lastname, Long numTel, Departement departement,String email, List<String> roles) {
 		    this.token = accessToken;
 		    this.refreshToken=refreshToken;
 		    this.id = id;
@@ -33,7 +33,6 @@ public class JwtResponse {
 		    this.roles = roles;
 		    this.firstname=firstname;
 		    this.lastname=lastname;
-		    this.photo=photo;
 		    this.numTel=numTel;
 		    this.departement=departement;
 		  }
@@ -52,15 +51,7 @@ public class JwtResponse {
 
 
 
-	public String getPhoto() {
-		return photo;
-	}
-
-
-
-	public void setPhoto(String photo) {
-		this.photo = photo;
-	}
+	
 
 
 

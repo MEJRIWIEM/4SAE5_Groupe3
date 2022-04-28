@@ -1,5 +1,6 @@
 package tn.esprit.spring.wecare.Services.Collaborators;
 
+
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -9,38 +10,37 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Date;
+
+import java.time.LocalDateTime;
+
 import java.util.List;
-import java.util.logging.Logger;
+
 
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import javax.transaction.Transactional;
 
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Scheduled;
+
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Sort;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
-import tn.esprit.spring.wecare.Entities.Collaborators.Rating;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.OfferRepository;
-import tn.esprit.spring.wecare.Repositories.Collaborators.RatingRepository;
-
-import tn.esprit.spring.wecare.helper.offerExcelExporter;
-
 
 @Service
 public class OfferServiceImp implements OfferService{
@@ -50,49 +50,30 @@ public class OfferServiceImp implements OfferService{
 	CollaboratorRepository collaboratorRepository;
 	@Autowired
 	UserRepository userRepository;
-	@Autowired
-	RatingRepository ratingRepository;
-	
-	
-	private offerExcelExporter offerExcel;
-	
-	private RatingService ratingService;
-	
-	  static final Logger LOGGER = 
-			    Logger.getLogger(OfferServiceImp.class.getName());
-	  
-	  
-	
-	Double totale ;
-	
-	
-
 	@Override
 	@Transactional
 	public ResponseEntity addOffer( Offer offer, Long id) {
-		List<Collaborator> collaborators =  collaboratorRepository.findAll();
+		List<Collaborator> collaborators = collaboratorRepository.findAll();
 
 		 for(Collaborator c: collaborators){
 			 if(c.getIdCollaborator().equals(id))
 			 {
-				 offer.setCollaborator(c);
 				 
-				// offer.setRatingAvg(totale);
-				  offerRepository.save(offer);
-				  //RatingServiceImp.AvgRatingByOffer( Long id);
-				 // totale= this.ratingService.AvgRatingByOffer(offer);
-				  //offer.setRatingAvg(totale);
-				//  offerRepository.save(offer);
+				 offer.setCollaborator(c);
+				 //ads.setUser(user);
+				// offer.setDateCreated(LocalDateTime.now());
+				// offer.setDateEnd(LocalDateTime.now());
+			      offerRepository.save(offer);
+			
+			 
+			 
+			 //user.getAds().add(offer);
+			 //userRepository.save(user);
 			 return new ResponseEntity<String>("offer created successfully!",HttpStatus.OK);
 			 }}
 		 
 		 return new ResponseEntity<String>("offer was not created!",HttpStatus.BAD_REQUEST);
 	}
-	
-	@Autowired
-	  public void setOtherService(RatingService ratingService) {
-	    this.ratingService = ratingService;
-	  }
 
 	@Override
 	public ResponseEntity EditOffer( Long id, Offer offer) {
@@ -105,6 +86,10 @@ public class OfferServiceImp implements OfferService{
 				 //o.setDateCreated(LocalDateTime.now());
 				 //o.setDateEnd(LocalDateTime.now());
 				 o.setPercent(offer.getPercent());
+				 //o.setTargetNbrViews(offer.getTargetNbrViews());
+				 //o.setFinalNbrViews(offer.getFinalNbrViews());
+				 
+				 
 				 offerRepository.save(o);
 				 return new ResponseEntity<String>("offer edited successfully!",HttpStatus.OK);
 
@@ -133,6 +118,7 @@ public class OfferServiceImp implements OfferService{
 	public List<Offer> RetrieveOffer() {
 		return 	 offerRepository.findAll();
 	}
+
 
 	@Override
 	public List<Offer> getOffersWithCollabortorId(Long id) {

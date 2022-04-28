@@ -10,10 +10,12 @@ import tn.esprit.spring.wecare.Entities.Forum.Post;
 
 public interface CollaboratorService {
 	
+
 	
 //	public String sendMail(EmailRequestDto request, Map<String, String> model);
 	
 	public void MailWithAttachment();
+
 	public ResponseEntity addCollaborator(Collaborator collaborator ,User user);
 	
 	public List<Collaborator> RetrieveCollaborators();
