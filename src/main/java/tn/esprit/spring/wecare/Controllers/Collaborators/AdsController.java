@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
-import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Services.Collaborators.AdsService;
 import tn.esprit.spring.wecare.Services.Collaborators.CollaboratorService;
