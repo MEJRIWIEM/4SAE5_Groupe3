@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,6 +41,14 @@ public class Offer implements Serializable{/**
 
 	
 	private String name;
+	@Column(precision=2, scale=2, columnDefinition = "double default 0" )
+	//@Type(type = "big_decimal") 
+    //@Value("0.0")
+	//@Column(precision=10, scale=2)
+	private Double   ratingAvg ;
+	
+	@Column(columnDefinition = "integer default 0")
+    private Integer countUser;
 	
 	@Enumerated(EnumType.STRING)
 	

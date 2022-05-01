@@ -146,12 +146,7 @@ public class PostServiceImp implements PostService {
 	}
 
 
-	public ResponseEntity<Object> addPost(Post post, User us) {
-		List<Post> posts = postRepository.findAll();
-		
-	
-		
-		post.setUser(us);
+
 
 	@Override
 	public ResponseEntity addPost(Post post, User user) {
@@ -188,7 +183,7 @@ public class PostServiceImp implements PostService {
 		}
 		return new ResponseEntity("Error!", HttpStatus.CONFLICT);
 
-			
+	}
 
 	@Override
 	public ResponseEntity EditPost(Long id, User user, Post post) throws IOException {
