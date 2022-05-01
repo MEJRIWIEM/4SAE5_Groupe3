@@ -50,7 +50,6 @@ import java.net.URL;
 @CrossOrigin(origins = "http://localhost:8081", maxAge = 3600)
 @RestController
 @RequestMapping("/api/forumCrud")
-@CrossOrigin(origins = "http://localhost:8080")
 public class ForumController {
 	@Autowired
 	UserRepository userRepository;
@@ -69,7 +68,7 @@ public class ForumController {
 		return PostService.addPost(file, post, us);
 
 	}
-	@PostMapping
+	@PostMapping("/addPost")
 	public ResponseEntity<Object> addPost(@RequestBody Post post ) throws IOException{
 		User us = getTheCurrentUser();
 		return PostService.addPost( post, us);

@@ -25,6 +25,7 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -168,11 +169,11 @@ public class OfferServiceImp implements OfferService{
 	
 	//@Scheduled(cron = "0 0 0 1 * *")
 	//@Scheduled(cron = "*/10 * * * * *")
-	  public void rememberMeToExportExcel() throws InterruptedException {
+	//  public void rememberMeToExportExcel() throws InterruptedException {
 	   
-	    LOGGER.info("download offer xsl "+ 
-	      LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));  
-	  }
+	   // LOGGER.info("download offer xsl "+ 
+	   //   LocalDateTime.now().toEpochSecond(ZoneOffset.UTC));  
+	 // }
 
 	@Override
 	//@Scheduled(cron = "*/10 * * * * *")
