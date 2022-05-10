@@ -23,7 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -50,7 +49,6 @@ import java.net.URL;
 
 @RestController
 @RequestMapping("/api/forumCrud")
-@CrossOrigin(origins = "http://localhost:8080")
 public class ForumController {
 	@Autowired
 	UserRepository userRepository;
@@ -68,17 +66,6 @@ public class ForumController {
 		User us = getTheCurrentUser();
 		return PostService.addPost(file, post, us);
 
-	}
-	@PostMapping
-	public ResponseEntity<Object> addPost(@RequestBody Post post ) throws IOException{
-		User us = getTheCurrentUser();
-		return PostService.addPost( post, us);
-
-	}
-	@PutMapping("/{id}")
-	public ResponseEntity<Object> EditPost(@PathVariable("id") Long id, @RequestBody Post post) throws IOException {
-		User us = getTheCurrentUser();
-		return PostService.EditPost( id, us, post);
 	}
 
 	// edit his post
@@ -103,7 +90,7 @@ public class ForumController {
 	}
 
 	// see a specific post with his id
-	@GetMapping("/RetrievePost/{id}")
+	@GetMapping("/RetrivePost/{id}")
 	public Post RetrievePost(@PathVariable("id") Long id) {
 		return PostService.RetrievePost(id);
 	}
@@ -178,11 +165,19 @@ public class ForumController {
 		return "Token has expired, get a new one.";
 	}
 
-	@PostMapping("/shareOnLinkedin/{id}/")
+	@GetMapping("/shareOnLinkedin/{id}/")
 	public void getIdUser(@PathParam("token") String token, @PathVariable("id") Long id1) {
+		String y = Character.toString( (char) 128_512 );
 		Post post = PostService.RetrievePost(id1);
-		
-	   
+		String content = "\uD83D\uDC8C"+post.getTitle().toUpperCase()+"\uD83D\uDC8C"
+				+ System.lineSeparator()+post.getText()+System.lineSeparator()+System.lineSeparator()
+				+"\u00A9"+ "Writer : " +post.getUser().getFirstname()+", www.wecare.tn";
+		JSONObject jsonObj = null;
+	    try {
+	        jsonObj = new JSONObject(content);
+	    } catch (JSONException e) {
+	        e.printStackTrace();
+	    }
 		
 		String userId = "";
 		System.out.println(token);

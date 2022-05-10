@@ -50,8 +50,11 @@ public class PostServiceImp implements PostService {
 	@Override
 	public List<Post> RetrievePostsWithFile() {
 		List<Post> posts = postRepository.findAll();
-	
-		return posts;
+		List<Post> affichages = new ArrayList<>();
+		for (Post p : posts) {
+			affichages.add(p);
+		}
+		return affichages;
 	}
 
 	@Override
@@ -144,47 +147,6 @@ public class PostServiceImp implements PostService {
 		postRepository.save(post);
 		fileDBRepository.save(FileDB);
 		return new ResponseEntity("Post created successfully!", HttpStatus.CREATED);
-	}
-
-	@Override
-	public ResponseEntity addPost(Post post, User user) {
-		List<Post> posts = postRepository.findAll();
-		
-		for(Post p : posts){
-			if(stringSimilarity.similarity(p.getTitle(), post.getTitle())>0.500 ){
-				return new ResponseEntity("A similar post already exists! Try to enter a new title please.", HttpStatus.CREATED);
-				
-			}
-			if(stringSimilarity.similarity(p.getText(), post.getText())>0.500 ){
-				return new ResponseEntity("A similar post already exists! Try to enter a new content please.", HttpStatus.CREATED);
-				
-			}
-		}
-		
-		post.setUser(user);
-		post.setTimestamp(LocalDateTime.now());
-
-		postRepository.save(post);
-		return new ResponseEntity("Post created successfully!", HttpStatus.CREATED);
-	}
-
-	@Override
-	public ResponseEntity EditPost(Long id, User user, Post post) throws IOException {
-		List<Post> posts = postRepository.findAll();
-		
-	
-
-		for (Post p : posts) {
-			if (p.getUser().equals(user) && p.getIdPost().equals(id)) {
-				p.setText(post.getText());
-				p.setTitle(post.getTitle());
-				p.setTimestamp(LocalDateTime.now());
-				p.setFileURL(post.getFileURL());
-				postRepository.save(p);
-				return new ResponseEntity("Post edited successfully!", HttpStatus.OK);
-			}
-		}
-		return new ResponseEntity("Post was not edited!", HttpStatus.CONFLICT);
 	}
 
 }

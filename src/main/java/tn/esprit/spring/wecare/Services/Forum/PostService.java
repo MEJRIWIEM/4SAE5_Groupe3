@@ -13,7 +13,6 @@ import tn.esprit.spring.wecare.Entities.Forum.Post;
 
 public interface PostService {
 	public ResponseEntity addPost(MultipartFile file,Post post, User user) throws IOException;
-	public ResponseEntity addPost(Post post, User user);
 	//see the list of posts
 	public List<Post> RetrievePosts();
 	//see the list of user's posts
@@ -25,7 +24,5 @@ public interface PostService {
 	//edit his post
 	public List<Post>  RetrievePostsWithFile();
 	public ResponseEntity EditPost(MultipartFile file,Long id, User user, Post post) throws IOException;
-	public ResponseEntity EditPost(Long id, User user, Post post) throws IOException;
-
 
 }
