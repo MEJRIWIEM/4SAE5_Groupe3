@@ -1,12 +1,18 @@
 package tn.esprit.spring.wecare.Controllers.Collaborators;
 
+import java.io.IOException;
 import java.util.List;
 
+
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,12 +21,20 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import tn.esprit.spring.wecare.Configuration.Files.FileDB;
+import tn.esprit.spring.wecare.Configuration.Files.FileDBRepository;
+import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
+import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
 import tn.esprit.spring.wecare.Services.Collaborators.CollaboratorService;
 
 @RestController
@@ -33,9 +47,15 @@ public class CollaboratorController {
 	UserRepository userRepository;
 	@Autowired
 	CollaboratorService collaboratorService;
+	@Autowired
+	FileDBRepository fileDBRepository;
+	@Autowired 
+	CollaboratorRepository collaboratorRepo;
+	@Autowired
+	  FileStorageService storageService;
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping("/addCollaborator")
-	public  ResponseEntity<Object> addCollaborator(@RequestBody Collaborator collaborator) {
+	public  ResponseEntity<Object> addCollaborator(@RequestBody Collaborator collaborator)  {
 
 		String username;
 		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -45,9 +65,34 @@ public class CollaboratorController {
 			 username = principal.toString();
 			}
 		User us= userRepository.findByUsername(username).orElse(null);
-		return collaboratorService.addCollaborator(collaborator, us);
+		return collaboratorService.addCollaborator( collaborator, us);
 		
 	}
+	
+	
+	//user upload profile photo
+    @PostMapping("/logo")
+    public void profilePic(@RequestParam("file") MultipartFile file) throws IOException{
+		List<Collaborator> collaborators = collaboratorRepo.findAll();
+
+		 for(Collaborator collaborator: collaborators){
+    	if(file!=null){
+			String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+		    FileDB FileDB = new FileDB(fileName, file.getContentType(), file.getBytes());
+	        fileDBRepository.save(FileDB);
+	        collaborator.setFileDB(FileDB);
+	        collaboratorRepo.save(collaborator);
+		}}
+    	
+    }
+    
+    @GetMapping("/files/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+      Resource file = (Resource) storageService.getFile(filename);
+      return ResponseEntity.ok()
+          .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + file.getFilename() + "\"").body(file);
+    }
 	
 	//see the list of collaborators
 		@GetMapping("/ListOfCollaborators")
@@ -84,7 +129,7 @@ public class CollaboratorController {
 		}
 
 		
-		// see a specific post with his id
+		// see a specific collaborator with his id
 		@GetMapping("/RetriveCollaborator/{id}")
 		public Collaborator RetriveCollaborator(@PathVariable("id") Long id) {
 			return collaboratorService.RetrieveCollaborator(id);

@@ -26,4 +26,7 @@ public class FileStorageService {
   public FileDB getInfoFile(String string){
 	  return fileDBRepository.findById(string).get();
   }
+  
+  void deleteAll(){};
+  
 }

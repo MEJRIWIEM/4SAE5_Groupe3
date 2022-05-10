@@ -44,6 +44,8 @@ public class offerExcelExporter {
 			cell.setCellValue((Integer) value);
 		}else if(value instanceof Boolean) {
 			cell.setCellValue((Boolean) value);
+		}else if(value instanceof Float) {
+			cell.setCellValue((Float) value);
 		}else if(value instanceof Double) {
 			cell.setCellValue((Double) value);
 		}else{
