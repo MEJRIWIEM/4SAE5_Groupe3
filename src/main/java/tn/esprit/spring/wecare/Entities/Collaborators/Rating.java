@@ -30,7 +30,7 @@ public class Rating implements Serializable {/**
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idRating;
 	
-	private Integer value;
+	private float value;
 	
 	@ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "user_id")

@@ -25,6 +25,8 @@ import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.FileSystemResource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -151,7 +153,7 @@ public class OfferServiceImp implements OfferService{
             String attachment) throws MessagingException {
 		MimeMessage mimeMessage=javaMailSender.createMimeMessage();
 		MimeMessageHelper mimeMessageHelper=new MimeMessageHelper(mimeMessage,true);
-		mimeMessageHelper.setFrom("noreply.wecare.tn@gmail.com");
+		mimeMessageHelper.setFrom("wecare.noreply.tn@gmail.com");
 		mimeMessageHelper.setTo(toEmail);
 		mimeMessageHelper.setText(body);
 		mimeMessageHelper.setSubject(subject);
@@ -181,6 +183,16 @@ public class OfferServiceImp implements OfferService{
 		
 		sendMailWithAttachment("raoudha.zid@esprit.tn","the list of Offers by rating of this moth ","u can transfer to our collaborators","C:/Users/zidra/Downloads/ListOffersByRating.xlsx");
 	}
+
+	@Override
+	public Offer RetrieveOfferById(Long id) {
+		return offerRepository.findById(id).orElse(null);
+	}
+	
+	@Override
+    public Page<Offer> findAll(Pageable pageable) {
+        return offerRepository.findAll(pageable);
+    }
 	
 	
 	
