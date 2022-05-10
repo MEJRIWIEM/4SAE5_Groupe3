@@ -2,6 +2,7 @@ package tn.esprit.spring.wecare.Services.Collaborators;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.Collaborators.Advertising;
 import tn.esprit.spring.wecare.Entities.Collaborators.Collaborator;
+import tn.esprit.spring.wecare.Entities.Collaborators.Offer;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.AdsRepository;
 import tn.esprit.spring.wecare.Repositories.Collaborators.CollaboratorRepository;
@@ -39,7 +41,7 @@ public class AdsServiceImp implements AdsService{
 				 ads.setCollaborator(c);
 				 ads.setUser(user);
 				ads.setDateCreated(LocalDateTime.now());
-				ads.setDateEnd(LocalDateTime.now());
+				//ads.setDateEnd(LocalDateTime.now());
 			      adsRepository.save(ads);
 			
 			 
@@ -62,7 +64,7 @@ public class AdsServiceImp implements AdsService{
 				 a.setCost(ads.getCost());
 				 a.setTypeAd(ads.getTypeAd());
 				 a.setDateCreated(LocalDateTime.now());
-				 a.setDateEnd(LocalDateTime.now());
+				 a.setDateEnd(ads.getDateEnd());
 				 a.setName(ads.getName());
 				 a.setTargetNbrViews(ads.getTargetNbrViews());
 				 a.setFinalNbrViews(ads.getFinalNbrViews());
@@ -97,6 +99,29 @@ public class AdsServiceImp implements AdsService{
 	@Override
 	public List<Advertising> RetrieveAds() {
 		return 	 adsRepository.findAll();
+	}
+
+
+	@Override
+	public List<Advertising> getAdsWithCollabortorId(Long id) {
+		List<Advertising> ads = adsRepository.findAll();
+		List<Collaborator> collaborators =collaboratorRepository.findAll();
+		Collaborator collaborator = collaboratorRepository.getById(id);
+		List<Advertising> myAds = new ArrayList<Advertising>();
+        
+			for ( Advertising a : ads) {
+				if ((a.getCollaborator().equals(collaborator))) {
+					
+					myAds.add(a);	
+				}
+			}
+        return myAds;
+	}
+
+
+	@Override
+	public Advertising RetrieveAdvertisingById(Long id) {
+		return adsRepository.findById(id).orElse(null);
 	}
 	}
 	
