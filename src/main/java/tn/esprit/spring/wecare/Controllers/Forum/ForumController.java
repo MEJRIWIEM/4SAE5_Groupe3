@@ -12,7 +12,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URI;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.websocket.server.PathParam;
 
@@ -20,6 +22,7 @@ import org.apache.tomcat.util.json.JSONParser;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -31,9 +34,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import tn.esprit.spring.wecare.Configuration.Files.FileStorageService;
 import tn.esprit.spring.wecare.Entities.User;
@@ -41,6 +47,11 @@ import tn.esprit.spring.wecare.Entities.Forum.Comment;
 import tn.esprit.spring.wecare.Entities.Forum.Likes;
 import tn.esprit.spring.wecare.Entities.Forum.Post;
 import tn.esprit.spring.wecare.Repositories.UserRepository;
+import tn.esprit.spring.wecare.Repositories.Forum.CommentRepository;
+import tn.esprit.spring.wecare.Repositories.Forum.LikesRepository;
+import tn.esprit.spring.wecare.Repositories.Forum.PostRepository;
+import tn.esprit.spring.wecare.Services.Forum.CommentService;
+import tn.esprit.spring.wecare.Services.Forum.LikesService;
 import tn.esprit.spring.wecare.Services.Forum.NotificationService;
 import tn.esprit.spring.wecare.Services.Forum.PostServiceImp;
 import java.awt.*;
@@ -59,7 +70,16 @@ public class ForumController {
 	private FileStorageService storageService;
 	@Autowired
 	NotificationService notificationService;
-
+	@Autowired
+    CommentRepository commentRepo;
+	@Autowired
+	CommentService commentService;
+	@Autowired
+	PostRepository postRepo;
+	@Autowired
+	LikesRepository likesRepo;
+	@Autowired
+	LikesService likesService;
 	// add a post with a file
 	@PostMapping("/addPostupload")
 	public ResponseEntity<Object> addPostUploadFile(@RequestPart(value = "file", required = false) MultipartFile file,
@@ -68,23 +88,27 @@ public class ForumController {
 		return PostService.addPost(file, post, us);
 
 	}
-	@PostMapping("/addPost")
-	public ResponseEntity<Object> addPost(@RequestBody Post post ) throws IOException{
+
+	@PostMapping("/addPostupload2")
+	public ResponseEntity<Object> addPostUploadFile2(@RequestParam(value = "file", required = false) MultipartFile file,
+			@RequestParam(value = "post")  String  post) throws IOException {
+		Post p = new ObjectMapper().readValue(post, Post.class);
 		User us = getTheCurrentUser();
-		return PostService.addPost( post, us);
+		return PostService.addPost(file, p, us);
 
 	}
-	@PutMapping("/{id}")
-	public ResponseEntity<Object> EditPost(@PathVariable("id") Long id, @RequestBody Post post) throws IOException {
-		User us = getTheCurrentUser();
-		return PostService.EditPost( id, us, post);
-	}
-
 	@PostMapping
 	public ResponseEntity<Object> addPostUploadFile(
 			@RequestBody Post post)  {
 		User us = getTheCurrentUser();
 		return PostService.addPost( post, us);
+
+	}
+	@GetMapping("/{idPost}")
+	public  ResponseEntity<Boolean> statusLike(
+			@PathVariable("idPost") Long idPost)  {
+		User us = getTheCurrentUser();
+		return likesService.status(us, idPost);
 
 	}
 	// edit his post
@@ -116,15 +140,35 @@ public class ForumController {
 	}
 
 	// see a specific post with his id
-	@GetMapping("/RetrievePost/{id}")
+	@GetMapping("/RetrivePost/{id}")
 	public Post RetrievePost(@PathVariable("id") Long id) {
+		System.out.println("*************NUMBE********************"+commentRepo.CommentsNumber(PostService.RetrievePost(id)));
 		return PostService.RetrievePost(id);
+	}
+	
+	@GetMapping("/NbrCommentsPost/{id}")
+	public  long nbrCommentsByPost(@PathVariable("id") Long id){
+		return commentRepo.CommentsNumber(PostService.RetrievePost(id));
+	}
+	@GetMapping("/NbrLikesPost/{id}")
+	public  long nbrLikessByPost(@PathVariable("id") Long id){
+		return likesRepo.likesNumber(PostService.RetrievePost(id));
+	}
+	@GetMapping("/CommentsByPost/{id}")
+	public  Set<Comment> CommentsByPost(@PathVariable("id") Long id){
+		return (Set<Comment>) commentService.commentsByPost(PostService.RetrievePost(id));
+	}
+	
+	@GetMapping("/totalPosts")
+	public long total(){
+		return  postRepo.totalPosts();
 	}
 
 	// delete his post
 	@DeleteMapping("/DeletePost/{id}")
 	public ResponseEntity<Object> DeletePost(@PathVariable("id") Long id) {
 		User us = getTheCurrentUser();
+		System.out.println("************************executed**************");
 		return PostService.DeletePost(id, us);
 	}
 
@@ -144,11 +188,18 @@ public class ForumController {
 	@GetMapping("/showMyNotifications")
 	public List<String> showMyNotifications() {
 		User us = getTheCurrentUser();
-
-		return notificationService.showMyNotif(us);
+		List<String> mynotif = notificationService.showMyNotif(us);
+		Collections.reverse(mynotif);
+		System.out.println("title most liked post"+PostService.MostLiked().getTitle());
+		return mynotif;
 
 	}
 
+	@GetMapping("/MostLiked")
+	public Post show() {
+		return PostService.MostLiked();
+	}
+	
 	@GetMapping("/Linkedin")
 	public URI ShareOnLinkedin() throws URISyntaxException {
 		String myUrl = "https://www.linkedin.com/oauth/v2/authorization?response_type=code&client_id=782v4yfo7xy5jw&redirect_uri=https://oauth.pstmn.io/v1/callback&state=foobar&scope=r_liteprofile%20r_emailaddress%20w_member_social";
@@ -191,11 +242,19 @@ public class ForumController {
 		return "Token has expired, get a new one.";
 	}
 
-	@PostMapping("/shareOnLinkedin/{id}/")
+	@GetMapping("/shareOnLinkedin/{id}/")
 	public void getIdUser(@PathParam("token") String token, @PathVariable("id") Long id1) {
+		String y = Character.toString( (char) 128_512 );
 		Post post = PostService.RetrievePost(id1);
-		
-	   
+		String content = "\uD83D\uDC8C"+post.getTitle().toUpperCase()+"\uD83D\uDC8C"
+				+ System.lineSeparator()+post.getText()+System.lineSeparator()+System.lineSeparator()
+				+"\u00A9"+ "Writer : " +post.getUser().getFirstname()+", www.wecare.tn";
+		JSONObject jsonObj = null;
+	    try {
+	        jsonObj = new JSONObject(content);
+	    } catch (JSONException e) {
+	        e.printStackTrace();
+	    }
 		
 		String userId = "";
 		System.out.println(token);

@@ -26,16 +26,10 @@ public class CommentController {
 	@Autowired
 	UserRepository userRepository;
 	@PostMapping("/addComment/{id}")
-	public ResponseEntity<?>  CommentPost(@RequestBody Comment comment, @PathVariable("id") Long id){
-		String username;
-		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		if (principal instanceof UserDetails) {
-			username = ((UserDetails)principal).getUsername();
-			} else {
-			 username = principal.toString();
-			}
-		User us= userRepository.findByUsername(username).orElse(null);	
-		return commentService.CommentPost(us, comment, id);
+	public ResponseEntity<?>  CommentPost(@RequestBody Comment comment,@PathVariable("id") Long id){
+	
+		User us=  getTheCurrentUser();	
+		return commentService.CommentPost(us, comment,id);
 		
 	}
 	@DeleteMapping("/deleteComment/{id}")
@@ -62,6 +56,17 @@ public class CommentController {
 		User us= userRepository.findByUsername(username).orElse(null);	
 		return commentService.EditComment(us, id, comment);
 
+	}
+	public User getTheCurrentUser() {
+		String username;
+		Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+		if (principal instanceof UserDetails) {
+			username = ((UserDetails) principal).getUsername();
+		} else {
+			username = principal.toString();
+		}
+		User us = userRepository.findByUsername(username).orElse(null);
+		return us;
 	}
 
 	@GetMapping("/getComment/{id}")
