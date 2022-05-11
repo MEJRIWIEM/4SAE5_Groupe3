@@ -55,6 +55,7 @@ import tn.esprit.spring.wecare.Entities.Role;
 import tn.esprit.spring.wecare.Entities.User;
 import tn.esprit.spring.wecare.Entities.EmployeeList.EmployeeList;
 import tn.esprit.spring.wecare.Payloads.Requests.ForgetPassword;
+import tn.esprit.spring.wecare.Payloads.Requests.LinkedinLoginRequest;
 import tn.esprit.spring.wecare.Payloads.Requests.LoginRequest;
 import tn.esprit.spring.wecare.Payloads.Requests.PasswordReset;
 import tn.esprit.spring.wecare.Payloads.Requests.SignupRequest;
@@ -353,12 +354,12 @@ public final class AuthController {
 		return myURI;
 		}
 	
-	@GetMapping("/getToken")
-	public String getToken(@RequestBody String code){
-		 System.out.println(code);
+	@PostMapping("/getToken")
+	public ResponseEntity<?> getToken(@RequestBody LinkedinLoginRequest code){
+		 System.out.println(code.getCode());
 
 		 try {
-			 String string = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code+"&redirect_uri=https://oauth.pstmn.io/v1/callback&client_id=782v4yfo7xy5jw&client_secret=SQEafEMTbtmQ1juw";
+			 String string = "https://www.linkedin.com/oauth/v2/accessToken?grant_type=authorization_code&code="+code.getCode()+"&redirect_uri=https://oauth.pstmn.io/v1/callback&client_id=782v4yfo7xy5jw&client_secret=SQEafEMTbtmQ1juw";
 			 System.out.println(string);
 			 URL url = new URL(string);
 	            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -390,11 +391,69 @@ public final class AuthController {
 	        			
 	        			createLinkedInUser(token);
 	        			
+	        			User aux = userRepository.findByEmail(email);
+	        			
+	        			
+	        			
+	        			Authentication authentication = authenticationManager.authenticate(
+	        					new UsernamePasswordAuthenticationToken(aux.getUsername(), "changeit"));
+
+	        			SecurityContextHolder.getContext().setAuthentication(authentication);
+	        			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
+
+	        			String jwt = jwtUtils.generateJwtToken(userDetails);
+	        		    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+	        			List<String> roles = userDetails.getAuthorities().stream()
+	        					.map(item -> item.getAuthority())
+	        					.collect(Collectors.toList());
+
+	        			return ResponseEntity.ok(new JwtResponse(jwt, 
+	        													 refreshToken.getToken(),
+	        													 userDetails.getId(), 
+	        													 userDetails.getUsername(), 
+	        													 userDetails.getFirstname(),
+	        													 userDetails.getLastname(),
+	        													 userDetails.getNumTel(),
+	        													 userDetails.getDepartement(),
+	        													 userDetails.getEmail(),			 											
+	        													 roles));
+	        			
+	        			
+	        			}else{
+	        				User aux = userRepository.findByEmail(email);
+	        				aux.setLinkedin(token);
+	        				userRepository.save(aux);
+	        				
+		        			Authentication authentication = authenticationManager.authenticate(
+		        					new UsernamePasswordAuthenticationToken(aux.getUsername(), "changeit"));
+
+		        			SecurityContextHolder.getContext().setAuthentication(authentication);
+		        			UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();		
+
+		        			String jwt = jwtUtils.generateJwtToken(userDetails);
+		        		    RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+		        			List<String> roles = userDetails.getAuthorities().stream()
+		        					.map(item -> item.getAuthority())
+		        					.collect(Collectors.toList());
+
+		        			return ResponseEntity.ok(new JwtResponse(jwt, 
+		        													 refreshToken.getToken(),
+		        													 userDetails.getId(), 
+		        													 userDetails.getUsername(), 
+		        													 userDetails.getFirstname(),
+		        													 userDetails.getLastname(),
+		        													 userDetails.getNumTel(),
+		        													 userDetails.getDepartement(),
+		        													 userDetails.getEmail(),			 											
+		        													 roles));
+	        				
 	        			}
 
 	                
 
-	                return output;
+	               // return output;
 	                
 
 	                
@@ -405,7 +464,9 @@ public final class AuthController {
 	        } catch (Exception e) {
 	            System.out.println("Exception in NetClientGet:- " + e);
 	        }
-		return "Token has expired, get a new one.";
+		 return ResponseEntity
+					.badRequest()
+					.body(new MessageResponse("Error Token is expired "));
 	}
 	
 	
@@ -441,8 +502,37 @@ public final class AuthController {
 	                Role userRole = roleRepository.findByName(ERole.ROLE_USER)
 							.orElseThrow(() -> new RuntimeException("Error: Role is not found."));
 					roles.add(userRole);
-	                 
-	                User u = new User(id,email,firstname,Lastname,"changeit",roles);
+					
+					String pass = "changeit";
+					
+					
+					 
+	                User u = new User(id,email,firstname,Lastname,encoder.encode(pass),roles,token);
+	                
+	                File file = new File("src/main/resources/user.png");
+	            	FileItem fileItem = new DiskFileItem("file", Files.probeContentType(file.toPath()), false, file.getName(), (int) file.length(), file.getParentFile());
+
+	            	try {
+	            	    InputStream input = new FileInputStream(file);
+	            	    OutputStream os = fileItem.getOutputStream();
+	            	    IOUtils.copy(input, os);
+	            	    // Or faster..
+	            	    // IOUtils.copy(new FileInputStream(file), fileItem.getOutputStream());
+	            	} catch (IOException ex) {
+	            	    // do something.
+	            	}
+
+	            	MultipartFile result = new CommonsMultipartFile(fileItem);
+	            	
+	            	
+	            	
+	            	if(result!=null){
+	        			String fileName = StringUtils.cleanPath(result.getOriginalFilename());
+	        		    FileDB FileDB = new FileDB(fileName, result.getContentType(), result.getBytes());
+	        	        fileDBRepository.save(FileDB);
+	        	        u.setFileDB(FileDB);
+	        	        
+	        		}
 	                             
 	                userRepository.save(u);
 	  

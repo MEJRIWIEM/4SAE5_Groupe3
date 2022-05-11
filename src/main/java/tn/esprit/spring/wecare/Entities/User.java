@@ -43,6 +43,8 @@ public class User {
 	private String firstname;
 	private String lastname;
 	
+	private String linkedin;
+	
 	@OneToOne(cascade= CascadeType.ALL)
 	private FileDB fileDB;
 	
@@ -125,7 +127,7 @@ public class User {
 	}
 	
 
-	public User(String username,String email,String firstname, String lastname,String password, Set<Role> roles) {
+	public User(String username,String email,String firstname, String lastname,String password, Set<Role> roles,String linkedin) {
 		super();
 		this.username = username;
 		this.email = email;
@@ -133,6 +135,7 @@ public class User {
 		this.lastname = lastname;
 		this.password = password;
 		this.roles = roles;
+		this.linkedin=linkedin;
 	}
 	
 	
@@ -212,7 +215,13 @@ public class User {
 		this.numTel = numTel;
 	}
 
+	public String getLinkedin() {
+		return linkedin;
+	}
 
+	public void setLinkedin(String linkedin) {
+		this.linkedin = linkedin;
+	}
 
 
 }
