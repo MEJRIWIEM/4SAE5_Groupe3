@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+CsvFiles/Employee.csv
+*.csv
