@@ -54,12 +54,12 @@ public class Post implements Serializable{
 	 
 	 //ServletUriComponentsBuilder.fromCurrentContextPath().path("/files/")
 		//.path(p.getFileDB().getId()).toUriString()+ System.lineSeparator()
-	@JsonIgnore
+	
 	@ManyToOne
 	private User user;
 	
 	
-	@JsonIgnore
+	
 	@OneToMany(mappedBy = "post", fetch = FetchType.LAZY,cascade=CascadeType.ALL)
 	private Set<Comment> comments;
 	@JsonIgnore

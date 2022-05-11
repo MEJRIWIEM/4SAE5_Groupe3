@@ -71,5 +71,15 @@ public class LikeServiceImp implements LikesService {
 		return new ResponseEntity<String>("Post was not liked!", HttpStatus.BAD_REQUEST);
 	}
 
+	public ResponseEntity<Boolean> status(User user, Long id)  {
+		List<Likes> likes = likesRepository.findAll();
+		for (Likes l : likes){
+			if(l.getUser().equals(user)&& l.getPost().equals(postRepository.getById(id))){
+				return new ResponseEntity<Boolean>(true, HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<Boolean>(false, HttpStatus.OK);
+	}
+
 	
 }

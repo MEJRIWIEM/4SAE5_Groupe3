@@ -2,7 +2,9 @@ package tn.esprit.spring.wecare.Services.Forum;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import javax.transaction.Transactional;
 
@@ -38,28 +40,26 @@ public class CommentServiceImp implements CommentService{
 	public ResponseEntity  CommentPost(User user, Comment comment, Long id){
 		Notification notification = new Notification();
 		String output = BadWordFilter.getCensoredText(comment.getText());
-		List<Post> posts = postRepository.findAll();
 
-		 for(Post p: posts){
-			 if(p.getIdPost().equals(id))
-			 {
-				 comment.setText(output);
-			comment.setPost(p);
+
+		Post post =postRepository.getById(id);
+		comment.setPost(post);
+			comment.setText(output);
+			comment.setPost(comment.getPost());
 			comment.setUser(user);
 			comment.setTimestamp(LocalDateTime.now());
 			comment.setNotification(notification);
 			commentRepository.save(comment);
 			
 			 notification.setComment(comment);
-			 notification.setUser(p.getUser());
+			 notification.setUser(comment.getPost().getUser());
 			 notificationRepository.save(notification);
 			 
 			 user.getComments().add(comment);
 			 userRepository.save(user);
 			 return new ResponseEntity<String>("Post was commented successfully!",HttpStatus.OK);
-			 }}
+			 
 		 
-		 return new ResponseEntity<String>("Post was not commented!",HttpStatus.BAD_REQUEST);
 	}
 
 	@Override
@@ -100,5 +100,13 @@ public class CommentServiceImp implements CommentService{
 		String c= comment.getUser().getUsername() +" : "+comment.getText()  ;
 		return c;
 	}
+
+	@Override
+	public Set<Comment> commentsByPost(Post post) {
+		
+return (Set<Comment>) post.getComments();
+}
+
+	
 
 }

@@ -1,10 +1,12 @@
 package tn.esprit.spring.wecare.Services.Forum;
 
+import static org.hamcrest.CoreMatchers.nullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +52,7 @@ public class PostServiceImp implements PostService {
 	@Override
 	public List<Post> RetrievePostsWithFile() {
 		List<Post> posts = postRepository.findAll();
+		
 		return posts;
 	}
 
@@ -73,15 +76,16 @@ public class PostServiceImp implements PostService {
 
 	@Override
 	public ResponseEntity DeletePost(Long id, User user) {
-		List<Post> posts = postRepository.findAll();
-
-		for (Post p : posts) {
-			if (p.getUser().equals(user) && p.getIdPost().equals(id)) {
+		
+		Post p = postRepository.findById(id).orElse(null);
+		if(p.getUser().equals(user))
+		{
 				postRepository.delete(p);
 				return new ResponseEntity("Post deleted successfully!", HttpStatus.OK);
-			}
 		}
-		return new ResponseEntity("Post was not deleted!", HttpStatus.CONFLICT);
+		else
+		return new ResponseEntity("Failed to delete post!", HttpStatus.BAD_REQUEST);
+		
 
 	}
 
@@ -145,12 +149,9 @@ public class PostServiceImp implements PostService {
 		return new ResponseEntity("Post created successfully!", HttpStatus.CREATED);
 	}
 
-
-
-
-	@Override
-	public ResponseEntity addPost(Post post, User user) {
+	public ResponseEntity<Object> addPost(Post post, User us) {
 		List<Post> posts = postRepository.findAll();
+		
 		
 		for(Post p : posts){
 			if(stringSimilarity.similarity(p.getTitle(), post.getTitle())>0.500 ){
@@ -163,7 +164,7 @@ public class PostServiceImp implements PostService {
 			}
 		}
 		
-		post.setUser(user);
+		post.setUser(us);
 		post.setTimestamp(LocalDateTime.now());
 
 		postRepository.save(post);
@@ -183,25 +184,30 @@ public class PostServiceImp implements PostService {
 		}
 		return new ResponseEntity("Error!", HttpStatus.CONFLICT);
 
+			
 	}
 
 	@Override
-	public ResponseEntity EditPost(Long id, User user, Post post) throws IOException {
+	public Post MostLiked() {
 		List<Post> posts = postRepository.findAll();
-		
-	
-
-		for (Post p : posts) {
-			if (p.getUser().equals(user) && p.getIdPost().equals(id)) {
-				p.setText(post.getText());
-				p.setTitle(post.getTitle());
-				p.setTimestamp(LocalDateTime.now());
-				p.setFileURL(post.getFileURL());
-				postRepository.save(p);
-				return new ResponseEntity("Post edited successfully!", HttpStatus.OK);
+		List<Integer> lenghts = new ArrayList<Integer>();
+		for(Post p : posts){
+			lenghts.add(p.getLikes().size());
+		}
+		int n = Collections.max(lenghts);
+		for(Post p : posts){
+			if(n == p.getLikes().size())
+			{
+				return p ;
 			}
 		}
-		return new ResponseEntity("Post was not edited!", HttpStatus.CONFLICT);
+		return null;
+	}
+
+	@Override
+	public ResponseEntity EditPost2(MultipartFile file, Post post, User user) throws IOException {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
