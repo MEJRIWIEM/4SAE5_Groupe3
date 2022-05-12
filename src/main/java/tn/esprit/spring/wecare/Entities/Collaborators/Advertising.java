@@ -52,7 +52,8 @@ public class Advertising  implements Serializable{/**
 	private LocalDateTime dateCreated;
 
 	 @NonNull
-    private LocalDate dateEnd;;
+    //private LocalDate dateEnd;
+	 private LocalDateTime dateEnd;;
 	private Integer targetNbrViews;
 	private Integer finalNbrViews;
 	private Float cost;

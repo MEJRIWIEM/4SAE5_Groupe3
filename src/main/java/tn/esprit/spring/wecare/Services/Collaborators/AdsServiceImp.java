@@ -64,7 +64,7 @@ public class AdsServiceImp implements AdsService{
 				 a.setCost(ads.getCost());
 				 a.setTypeAd(ads.getTypeAd());
 				 a.setDateCreated(LocalDateTime.now());
-				 a.setDateEnd(ads.getDateEnd());
+				 a.setDateEnd(LocalDateTime.now());
 				 a.setName(ads.getName());
 				 a.setTargetNbrViews(ads.getTargetNbrViews());
 				 a.setFinalNbrViews(ads.getFinalNbrViews());

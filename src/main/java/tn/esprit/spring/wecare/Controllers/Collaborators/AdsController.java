@@ -112,7 +112,7 @@ public class AdsController {
 	}
 	
 	
-	@PreAuthorize("hasRole('ADMIN')")
+
 	@GetMapping("/ListOfAds")
 	public List<Advertising> RetrieveAds() {
 		return 	adsService.RetrieveAds();
