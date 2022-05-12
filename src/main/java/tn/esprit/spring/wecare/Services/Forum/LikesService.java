@@ -8,4 +8,4 @@ import tn.esprit.spring.wecare.Entities.Forum.Likes;
 
 public interface LikesService {
 	public  ResponseEntity LikePost(User user,  Long id);
-}
+	public ResponseEntity<Boolean> status(User user, Long id);}

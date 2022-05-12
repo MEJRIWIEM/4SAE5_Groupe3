@@ -30,6 +30,7 @@ public class Notification implements Serializable{
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long idNotification;
 
+	
 	@OneToOne(mappedBy="notification")
 	private Comment comment;
 	
