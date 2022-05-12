@@ -85,7 +85,7 @@ public class OfferController {
 	}
 	
 	
- 	@PreAuthorize("hasRole('ADMIN')")
+ 	
 	@GetMapping("/ListOfOffer")
 	public List<Offer> RetrieveOffer() {
 		return 	offerService.RetrieveOffer();
