@@ -13,6 +13,12 @@
 
 # Bad Words Filter:
 ![cap4](https://user-images.githubusercontent.com/47867148/171989433-eccedb24-ace2-43a1-ae68-11e09382e587.PNG)
+
+# Notifications:
 ![cap5](https://user-images.githubusercontent.com/47867148/171989439-74d991d0-4496-4f47-991e-4b585e8e6a04.PNG)
+
+# Flyer:
 ![Bleu Fluo Carwash Flyer](https://user-images.githubusercontent.com/47867148/171989445-556064a6-6f9e-458c-8d33-0cbfac382e90.png)
+
+# Poster:
 ![Affiche publicité femme avec lunettes de soleil (2)](https://user-images.githubusercontent.com/47867148/171989477-6e221f0a-476f-4236-a540-89e1ca2aeb9e.png)
