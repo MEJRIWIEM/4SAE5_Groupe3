@@ -7,7 +7,11 @@
 
 # Add Post:
 ![cap2](https://user-images.githubusercontent.com/47867148/171989417-bec71e99-487b-4ba4-9711-7f6a56b56d2d.PNG)
+
+# Post Description:
 ![cap31](https://user-images.githubusercontent.com/47867148/171989431-e46b469e-e490-49b8-8a15-a631d0e72159.PNG)
+
+# Bad Words Filter:
 ![cap4](https://user-images.githubusercontent.com/47867148/171989433-eccedb24-ace2-43a1-ae68-11e09382e587.PNG)
 ![cap5](https://user-images.githubusercontent.com/47867148/171989439-74d991d0-4496-4f47-991e-4b585e8e6a04.PNG)
 ![Bleu Fluo Carwash Flyer](https://user-images.githubusercontent.com/47867148/171989445-556064a6-6f9e-458c-8d33-0cbfac382e90.png)
